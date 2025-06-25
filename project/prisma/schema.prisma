@@ -1,0 +1,170 @@
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  WORKER
+  COMPANY_ADMIN
+  CORPORATE_ADMIN
+}
+
+enum LogStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EDIT_REQUESTED
+}
+
+enum UserStatus {
+  ACTIVE
+  DEACTIVATED
+}
+
+model Corporate {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  
+  companies Company[]
+  
+  @@map("corporates")
+}
+
+model Company {
+  id          String    @id @default(uuid())
+  name        String
+  corporateId String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  corporate Corporate @relation(fields: [corporateId], references: [id], onDelete: Cascade)
+  users     User[]
+  projects  Project[]
+  
+  @@map("companies")
+}
+
+model User {
+  id          String     @id @default(uuid())
+  email       String     @unique
+  phoneNumber String?    @unique
+  firstName   String
+  lastName    String
+  password    String
+  role        Role
+  status      UserStatus @default(ACTIVE)
+  companyId   String
+  isFirstLogin Boolean   @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  lastLoginAt DateTime?
+  
+  company         Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  workerProjects  WorkerProject[]
+  timeLogs        TimeLog[]       @relation("UserTimeLogs")
+  reviewedLogs    TimeLog[]       @relation("ReviewedLogs")
+  auditLogs       AuditLog[]      @relation("AuditLogActor")
+  targetAuditLogs AuditLog[]      @relation("AuditLogTarget")
+  notifications   Notification[]
+  
+  @@map("users")
+}
+
+model Project {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  companyId   String
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  company        Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  workerProjects WorkerProject[]
+  timeLogs       TimeLog[]
+  
+  @@map("projects")
+}
+
+model WorkerProject {
+  id        String   @id @default(uuid())
+  workerId  String
+  projectId String
+  assignedAt DateTime @default(now())
+  
+  worker  User    @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@unique([workerId, projectId])
+  @@map("worker_projects")
+}
+
+model TimeLog {
+  id          String    @id @default(uuid())
+  userId      String
+  projectId   String
+  startTime   DateTime
+  endTime     DateTime?
+  totalHours  Float?
+  description String?
+  status      LogStatus @default(PENDING)
+  reviewerId  String?
+  reviewedAt  DateTime?
+  feedback    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  user      User     @relation("UserTimeLogs", fields: [userId], references: [id], onDelete: Cascade)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  reviewer  User?    @relation("ReviewedLogs", fields: [reviewerId], references: [id])
+  auditLogs AuditLog[]
+  
+  @@index([userId, createdAt])
+  @@index([projectId, createdAt])
+  @@index([status])
+  @@map("time_logs")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String   // approve, reject, edit, create, delete, etc.
+  actorId   String   // User who performed the action
+  targetId  String?  // User who was affected (optional)
+  timeLogId String?  // TimeLog that was affected (optional)
+  oldValues Json?    // Previous values (for updates)
+  newValues Json?    // New values (for updates)
+  metadata  Json?    // Additional context
+  createdAt DateTime @default(now())
+  
+  actor   User     @relation("AuditLogActor", fields: [actorId], references: [id])
+  target  User?    @relation("AuditLogTarget", fields: [targetId], references: [id])
+  timeLog TimeLog? @relation(fields: [timeLogId], references: [id])
+  
+  @@index([actorId, createdAt])
+  @@index([timeLogId])
+  @@map("audit_logs")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      String   // log_status_change, project_assignment, invitation, etc.
+  isRead    Boolean  @default(false)
+  metadata  Json?    // Additional data
+  createdAt DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, isRead])
+  @@map("notifications")
+}
