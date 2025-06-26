@@ -161,27 +161,27 @@ export default function WorkerTimeLogPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#171717]">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#008080]"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#171717] flex">
       <Sidebar />
       
       <div className="flex-1 flex flex-col lg:ml-0">
         <Header />
         
         <main className="flex-1 p-4 lg:p-6">
-          <div className="bg-white rounded-lg shadow-sm">
+          <div className="bg-white dark:bg-[#171717] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
             {/* Header */}
-            <div className="px-4 lg:px-6 py-4 border-b border-gray-200">
+            <div className="px-4 lg:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                 <div>
-                  <h1 className="text-lg lg:text-xl font-semibold text-gray-900">My Time Logs</h1>
-                  <p className="text-sm text-gray-600">Track and manage your work time</p>
+                  <h1 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">My Time Logs</h1>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Track and manage your work time</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                   <Button
@@ -216,12 +216,12 @@ export default function WorkerTimeLogPage() {
             </div>
 
             {/* Filters */}
-            <div className="px-4 lg:px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div className="px-4 lg:px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#171717]/50">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <select
                   value={filters.status}
                   onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                 >
                   <option value="">All Status</option>
                   <option value="PENDING">Pending</option>
@@ -233,14 +233,14 @@ export default function WorkerTimeLogPage() {
                   type="date"
                   value={filters.startDate}
                   onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                   placeholder="Start Date"
                 />
                 <input
                   type="date"
                   value={filters.endDate}
                   onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                   placeholder="End Date"
                 />
                 <Button
@@ -259,13 +259,13 @@ export default function WorkerTimeLogPage() {
             {/* Mobile Card View */}
             <div className="lg:hidden">
               {timeLogs.map((log) => (
-                <div key={log.id} className="p-4 border-b border-gray-200">
+                <div key={log.id} className="p-4 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <p className="font-medium text-gray-900 text-sm">
+                      <p className="font-medium text-gray-900 dark:text-white text-sm">
                         {log.project?.name}
                       </p>
-                      <p className="text-xs text-gray-500">{formatDate(log.startTime)}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(log.startTime)}</p>
                     </div>
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(log.status)}`}>
                       {log.status === 'PENDING' && (
@@ -297,17 +297,17 @@ export default function WorkerTimeLogPage() {
                   
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Time Period:</span>
-                      <span>{formatTime(log.startTime)} - {log.endTime ? formatTime(log.endTime) : 'Ongoing'}</span>
+                      <span className="text-gray-500 dark:text-gray-400">Time Period:</span>
+                      <span className="text-gray-900 dark:text-white">{formatTime(log.startTime)} - {log.endTime ? formatTime(log.endTime) : 'Ongoing'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Duration:</span>
-                      <span className="font-medium">{formatDuration(log.totalHours || 0)}</span>
+                      <span className="text-gray-500 dark:text-gray-400">Duration:</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{formatDuration(log.totalHours || 0)}</span>
                     </div>
                     {log.description && (
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Description:</span>
-                        <span className="text-right max-w-32 truncate">{log.description}</span>
+                        <span className="text-gray-500 dark:text-gray-400">Description:</span>
+                        <span className="text-right max-w-32 truncate text-gray-900 dark:text-white">{log.description}</span>
                       </div>
                     )}
                   </div>
@@ -315,7 +315,7 @@ export default function WorkerTimeLogPage() {
                   <div className="flex items-center justify-end space-x-2 mt-3">
                     <button
                       onClick={() => handleViewDetails(log)}
-                      className="text-blue-600 hover:text-blue-900 p-2 rounded-full hover:bg-blue-100"
+                      className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
                       title="View Details"
                     >
                       <Eye className="w-4 h-4" />
@@ -323,7 +323,7 @@ export default function WorkerTimeLogPage() {
                     {(log.status === 'REJECTED' || log.status === 'EDIT_REQUESTED') && (
                       <button
                         onClick={() => handleEditLog(log)}
-                        className="text-orange-600 hover:text-orange-900 p-2 rounded-full hover:bg-orange-100"
+                        className="text-orange-600 hover:text-orange-900 dark:text-orange-400 dark:hover:text-orange-300 p-2 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/20"
                         title="Edit Entry"
                       >
                         <Edit3 className="w-4 h-4" />
@@ -337,53 +337,53 @@ export default function WorkerTimeLogPage() {
             {/* Desktop Table View */}
             <div className="hidden lg:block overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-50 dark:bg-[#171717]/50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Project
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Time Period
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Duration
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-[#171717] divide-y divide-gray-200 dark:divide-gray-700">
                   {timeLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-gray-50">
+                    <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-gray-900 dark:text-white">
                           {formatDate(log.startTime)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
                           {log.project?.name}
                         </div>
                         {log.description && (
-                          <div className="text-sm text-gray-500 max-w-xs truncate">
+                          <div className="text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
                             {log.description}
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-gray-900 dark:text-white">
                           {formatTime(log.startTime)} - {log.endTime ? formatTime(log.endTime) : 'Ongoing'}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
                           {formatDuration(log.totalHours || 0)}
                         </div>
                       </td>
@@ -419,7 +419,7 @@ export default function WorkerTimeLogPage() {
                         <div className="flex items-center space-x-2">
                           <button
                             onClick={() => handleViewDetails(log)}
-                            className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-100"
+                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
                             title="View Details"
                           >
                             <Eye className="w-4 h-4" />
@@ -427,7 +427,7 @@ export default function WorkerTimeLogPage() {
                           {(log.status === 'REJECTED' || log.status === 'EDIT_REQUESTED') && (
                             <button
                               onClick={() => handleEditLog(log)}
-                              className="text-orange-600 hover:text-orange-900 p-1 rounded-full hover:bg-orange-100"
+                              className="text-orange-600 hover:text-orange-900 dark:text-orange-400 dark:hover:text-orange-300 p-1 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/20"
                               title="Edit Entry"
                             >
                               <Edit3 className="w-4 h-4" />
@@ -444,9 +444,9 @@ export default function WorkerTimeLogPage() {
             {/* Empty State */}
             {timeLogs.length === 0 && (
               <div className="text-center py-12">
-                <Clock className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No time logs found</h3>
-                <p className="mt-1 text-sm text-gray-500">
+                <Clock className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No time logs found</h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   {Object.values(filters).some(v => v) 
                     ? 'No time logs match your current filters.'
                     : 'Start tracking your time to see logs here.'
@@ -457,9 +457,9 @@ export default function WorkerTimeLogPage() {
 
             {/* Pagination */}
             {timeLogs.length > 0 && (
-              <div className="px-4 lg:px-6 py-3 border-t border-gray-200">
+              <div className="px-4 lg:px-6 py-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                  <div className="text-sm text-gray-700 text-center sm:text-left">
+                  <div className="text-sm text-gray-700 dark:text-gray-300 text-center sm:text-left">
                     Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
                   </div>
                   <div className="flex items-center justify-center space-x-2">
@@ -471,7 +471,7 @@ export default function WorkerTimeLogPage() {
                     >
                       Previous
                     </Button>
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
                       Page {pagination.page} of {pagination.totalPages}
                     </span>
                     <Button
@@ -501,62 +501,62 @@ export default function WorkerTimeLogPage() {
       >
         <form onSubmit={handleUpdateLog} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Date
             </label>
             <input
               type="date"
               value={editFormData.date}
               onChange={(e) => setEditFormData(prev => ({ ...prev, date: e.target.value }))}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
               required
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Start Time
               </label>
               <input
                 type="time"
                 value={editFormData.startTime}
                 onChange={(e) => setEditFormData(prev => ({ ...prev, startTime: e.target.value }))}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                 required
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 End Time
               </label>
               <input
                 type="time"
                 value={editFormData.endTime}
                 onChange={(e) => setEditFormData(prev => ({ ...prev, endTime: e.target.value }))}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Description
             </label>
             <textarea
               value={editFormData.description}
               onChange={(e) => setEditFormData(prev => ({ ...prev, description: e.target.value }))}
               placeholder="Describe what you worked on..."
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-[#171717] text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
               rows={3}
             />
           </div>
 
           {editingLog?.feedback && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <h4 className="text-sm font-medium text-yellow-800 mb-1">Feedback from Admin:</h4>
-              <p className="text-sm text-yellow-700">{editingLog.feedback}</p>
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-300 mb-1">Feedback from Admin:</h4>
+              <p className="text-sm text-yellow-700 dark:text-yellow-400">{editingLog.feedback}</p>
             </div>
           )}
 

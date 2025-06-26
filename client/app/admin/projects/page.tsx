@@ -130,27 +130,27 @@ export default function AdminProjectsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#171717]">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#008080]"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#171717] flex">
       <Sidebar />
       
       <div className="flex-1 flex flex-col lg:ml-0">
         <Header />
         
         <main className="flex-1 p-4 lg:p-6">
-          <div className="bg-white rounded-lg shadow-sm">
+          <div className="bg-white dark:bg-[#171717] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
             {/* Header */}
-            <div className="px-4 lg:px-6 py-4 border-b border-gray-200">
+            <div className="px-4 lg:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                 <div>
-                  <h1 className="text-lg lg:text-xl font-semibold text-gray-900">Projects Management</h1>
-                  <p className="text-sm text-gray-600">Manage projects and assign workers</p>
+                  <h1 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">Projects Management</h1>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Manage projects and assign workers</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                   <Button
@@ -185,22 +185,22 @@ export default function AdminProjectsPage() {
             </div>
 
             {/* Filters */}
-            <div className="px-4 lg:px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div className="px-4 lg:px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#171717]/50">
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <input
                     type="text"
                     placeholder="Search projects..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                   />
                 </div>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                 >
                   <option value="">All Status</option>
                   <option value="active">Active</option>
@@ -212,20 +212,20 @@ export default function AdminProjectsPage() {
             {/* Mobile Card View */}
             <div className="lg:hidden">
               {filteredProjects.map((project) => (
-                <div key={project.id} className="p-4 border-b border-gray-200">
+                <div key={project.id} className="p-4 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-gray-900 truncate">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
                         {project.name}
                       </div>
-                      <div className="text-sm text-gray-500 mt-1 line-clamp-2">
+                      <div className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
                         {project.description || 'No description'}
                       </div>
                     </div>
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ml-2 ${
                       project.isActive 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
+                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
                     }`}>
                       {project.isActive ? '✅ Active' : '❌ Inactive'}
                     </span>
@@ -233,12 +233,12 @@ export default function AdminProjectsPage() {
                   
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Workers:</span>
+                      <span className="text-gray-500 dark:text-gray-400">Workers:</span>
                       <div className="flex items-center space-x-2">
-                        <span>{project._count?.workerProjects || 0}</span>
+                        <span className="text-gray-900 dark:text-white">{project._count?.workerProjects || 0}</span>
                         <button
                           onClick={() => handleViewWorkers(project)}
-                          className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-100"
+                          className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
                           title="View Workers"
                         >
                           <Eye className="w-4 h-4" />
@@ -246,31 +246,31 @@ export default function AdminProjectsPage() {
                       </div>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Time Logs:</span>
-                      <span>{project._count?.timeLogs || 0}</span>
+                      <span className="text-gray-500 dark:text-gray-400">Time Logs:</span>
+                      <span className="text-gray-900 dark:text-white">{project._count?.timeLogs || 0}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Created:</span>
-                      <span>{formatDate(project.createdAt)}</span>
+                      <span className="text-gray-500 dark:text-gray-400">Created:</span>
+                      <span className="text-gray-900 dark:text-white">{formatDate(project.createdAt)}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-end space-x-2 mt-3">
                     <button
                       onClick={() => handleViewProjectDetails(project)}
-                      className="text-blue-600 hover:text-blue-900 p-2 rounded-full hover:bg-blue-100"
+                      className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
                       title="View Project Details"
                     >
                       <Eye className="w-4 h-4" />
                     </button>
                     <button
-                      className="text-green-600 hover:text-green-900 p-2 rounded-full hover:bg-green-100"
+                      className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 p-2 rounded-full hover:bg-green-100 dark:hover:bg-green-900/20"
                       title="Assign Workers"
                     >
                       <UserPlus className="w-4 h-4" />
                     </button>
                     <button
-                      className="text-gray-600 hover:text-gray-900 p-2 rounded-full hover:bg-gray-100"
+                      className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                       title="Edit Project"
                     >
                       <Edit className="w-4 h-4" />
@@ -283,49 +283,49 @@ export default function AdminProjectsPage() {
             {/* Desktop Table View */}
             <div className="hidden lg:block overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-50 dark:bg-[#171717]/50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Project
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Workers
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Time Logs
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Created
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-[#171717] divide-y divide-gray-200 dark:divide-gray-700">
                   {filteredProjects.map((project) => (
-                    <tr key={project.id} className="hover:bg-gray-50">
+                    <tr key={project.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                       <td className="px-6 py-4">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
                             {project.name}
                           </div>
-                          <div className="text-sm text-gray-500 max-w-xs truncate">
+                          <div className="text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
                             {project.description || 'No description'}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm text-gray-900">
+                          <span className="text-sm text-gray-900 dark:text-white">
                             {project._count?.workerProjects || 0}
                           </span>
                           <button
                             onClick={() => handleViewWorkers(project)}
-                            className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-100"
+                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
                             title="View Workers"
                           >
                             <Eye className="w-4 h-4" />
@@ -333,39 +333,39 @@ export default function AdminProjectsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-gray-900 dark:text-white">
                           {project._count?.timeLogs || 0}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           project.isActive 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-red-100 text-red-800'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
+                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
                         }`}>
                           {project.isActive ? '✅ Active' : '❌ Inactive'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         {formatDate(project.createdAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center space-x-2">
                           <button
                             onClick={() => handleViewProjectDetails(project)}
-                            className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-100"
+                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
                             title="View Project Details"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
-                            className="text-green-600 hover:text-green-900 p-1 rounded-full hover:bg-green-100"
+                            className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 p-1 rounded-full hover:bg-green-100 dark:hover:bg-green-900/20"
                             title="Assign Workers"
                           >
                             <UserPlus className="w-4 h-4" />
                           </button>
                           <button
-                            className="text-gray-600 hover:text-gray-900 p-1 rounded-full hover:bg-gray-100"
+                            className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                             title="Edit Project"
                           >
                             <Edit className="w-4 h-4" />
@@ -381,11 +381,11 @@ export default function AdminProjectsPage() {
             {/* Empty State */}
             {filteredProjects.length === 0 && (
               <div className="text-center py-12">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Settings className="w-8 h-8 text-gray-400" />
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Settings className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                 </div>
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No projects found</h3>
-                <p className="mt-1 text-sm text-gray-500">
+                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No projects found</h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   {searchTerm || statusFilter 
                     ? 'No projects match your current filters.'
                     : 'Get started by creating your first project.'
@@ -396,9 +396,9 @@ export default function AdminProjectsPage() {
 
             {/* Pagination */}
             {filteredProjects.length > 0 && (
-              <div className="px-4 lg:px-6 py-3 border-t border-gray-200">
+              <div className="px-4 lg:px-6 py-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                  <div className="text-sm text-gray-700 text-center sm:text-left">
+                  <div className="text-sm text-gray-700 dark:text-gray-300 text-center sm:text-left">
                     Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
                   </div>
                   <div className="flex items-center justify-center space-x-2">
@@ -410,7 +410,7 @@ export default function AdminProjectsPage() {
                     >
                       Previous
                     </Button>
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
                       Page {pagination.page} of {pagination.totalPages}
                     </span>
                     <Button
@@ -442,7 +442,7 @@ export default function AdminProjectsPage() {
       >
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
               {selectedProject?.description || 'No project description available'}
             </p>
             <Button
@@ -460,16 +460,16 @@ export default function AdminProjectsPage() {
             </div>
           ) : projectWorkers.length === 0 ? (
             <div className="text-center py-8">
-              <Users className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No workers assigned</h3>
-              <p className="mt-1 text-sm text-gray-500">
+              <Users className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No workers assigned</h3>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 This project doesn't have any workers assigned yet.
               </p>
             </div>
           ) : (
             <div className="space-y-3 max-h-64 overflow-y-auto">
               {projectWorkers.map((worker) => (
-                <div key={worker.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div key={worker.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-gradient-to-br from-[#008080] to-[#006666] rounded-full flex items-center justify-center">
                       <span className="text-white font-medium text-xs">
@@ -477,10 +477,10 @@ export default function AdminProjectsPage() {
                       </span>
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
                         {worker.firstName} {worker.lastName}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
                         {worker.email}
                       </div>
                     </div>
@@ -488,8 +488,8 @@ export default function AdminProjectsPage() {
                   <div className="flex items-center space-x-2">
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                       worker.status === 'ACTIVE' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
+                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
                     }`}>
                       {worker.status === 'ACTIVE' ? 'Active' : 'Inactive'}
                     </span>

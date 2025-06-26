@@ -126,27 +126,27 @@ export default function AdminWorkersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#171717]">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#008080]"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#171717] flex">
       <Sidebar />
       
       <div className="flex-1 flex flex-col lg:ml-0">
         <Header />
         
         <main className="flex-1 p-4 lg:p-6">
-          <div className="bg-white rounded-lg shadow-sm">
+          <div className="bg-white dark:bg-[#171717] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
             {/* Header */}
-            <div className="px-4 lg:px-6 py-4 border-b border-gray-200">
+            <div className="px-4 lg:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                 <div>
-                  <h1 className="text-lg lg:text-xl font-semibold text-gray-900">Workers Management</h1>
-                  <p className="text-sm text-gray-600">Manage your team members and their access</p>
+                  <h1 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">Workers Management</h1>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Manage your team members and their access</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                   <Button
@@ -181,22 +181,22 @@ export default function AdminWorkersPage() {
             </div>
 
             {/* Filters */}
-            <div className="px-4 lg:px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div className="px-4 lg:px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#171717]/50">
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                   <input
                     type="text"
                     placeholder="Search workers by name or email..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                   />
                 </div>
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                 >
                   <option value="">All Roles</option>
                   <option value="WORKER">Workers</option>
@@ -211,7 +211,7 @@ export default function AdminWorkersPage() {
             {/* Mobile Card View */}
             <div className="lg:hidden">
               {filteredWorkers.map((worker) => (
-                <div key={worker.id} className="p-4 border-b border-gray-200">
+                <div key={worker.id} className="p-4 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-start space-x-3 mb-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-[#008080] to-[#006666] rounded-full flex items-center justify-center">
                       <span className="text-white font-medium text-sm">
@@ -219,14 +219,14 @@ export default function AdminWorkersPage() {
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
                         {worker.firstName} {worker.lastName}
                       </div>
-                      <div className="text-sm text-gray-500 truncate">
+                      <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
                         {worker.email}
                       </div>
                       {worker.phoneNumber && (
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-gray-400 dark:text-gray-500">
                           {worker.phoneNumber}
                         </div>
                       )}
@@ -235,9 +235,9 @@ export default function AdminWorkersPage() {
                   
                   <div className="flex items-center justify-between mb-3">
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      worker.role === 'CORPORATE_ADMIN' ? 'bg-purple-100 text-purple-800' :
-                      worker.role === 'COMPANY_ADMIN' ? 'bg-blue-100 text-blue-800' :
-                      'bg-green-100 text-green-800'
+                      worker.role === 'CORPORATE_ADMIN' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' :
+                      worker.role === 'COMPANY_ADMIN' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' :
+                      'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
                     }`}>
                       {worker.role === 'CORPORATE_ADMIN' && <Shield className="w-3 h-3 mr-1" />}
                       {worker.role === 'COMPANY_ADMIN' && <ShieldCheck className="w-3 h-3 mr-1" />}
@@ -246,8 +246,8 @@ export default function AdminWorkersPage() {
                     
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                       worker.status === 'ACTIVE' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
+                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
                     }`}>
                       {worker.status === 'ACTIVE' ? (
                         <>
@@ -263,15 +263,15 @@ export default function AdminWorkersPage() {
                     </span>
                   </div>
 
-                  <div className="text-xs text-gray-500 mb-3">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">
                     Last login: {worker.lastLoginAt ? formatDate(worker.lastLoginAt) : (
-                      <span className="text-yellow-600">Never logged in</span>
+                      <span className="text-yellow-600 dark:text-yellow-400">Never logged in</span>
                     )}
                   </div>
 
                   <div className="flex items-center justify-end space-x-2">
                     <button
-                      className="text-blue-600 hover:text-blue-900 p-2 rounded-full hover:bg-blue-100"
+                      className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
                       title="Edit User"
                     >
                       <Edit className="w-4 h-4" />
@@ -280,15 +280,15 @@ export default function AdminWorkersPage() {
                       onClick={() => handleStatusToggle(worker)}
                       className={`p-2 rounded-full ${
                         worker.status === 'ACTIVE'
-                          ? 'text-red-600 hover:text-red-900 hover:bg-red-100'
-                          : 'text-green-600 hover:text-green-900 hover:bg-green-100'
+                          ? 'text-red-600 hover:text-red-900 hover:bg-red-100 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20'
+                          : 'text-green-600 hover:text-green-900 hover:bg-green-100 dark:text-green-400 dark:hover:text-green-300 dark:hover:bg-green-900/20'
                       }`}
                       title={worker.status === 'ACTIVE' ? 'Deactivate User' : 'Activate User'}
                     >
                       {worker.status === 'ACTIVE' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                     </button>
                     <button
-                      className="text-gray-600 hover:text-gray-900 p-2 rounded-full hover:bg-gray-100"
+                      className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                       title="Send Email"
                     >
                       <Mail className="w-4 h-4" />
@@ -301,28 +301,28 @@ export default function AdminWorkersPage() {
             {/* Desktop Table View */}
             <div className="hidden lg:block overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-50 dark:bg-[#171717]/50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       User
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Role
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Last Login
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-[#171717] divide-y divide-gray-200 dark:divide-gray-700">
                   {filteredWorkers.map((worker) => (
-                    <tr key={worker.id} className="hover:bg-gray-50">
+                    <tr key={worker.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="w-10 h-10 bg-gradient-to-br from-[#008080] to-[#006666] rounded-full flex items-center justify-center">
@@ -331,14 +331,14 @@ export default function AdminWorkersPage() {
                             </span>
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">
                               {worker.firstName} {worker.lastName}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
                               {worker.email}
                             </div>
                             {worker.phoneNumber && (
-                              <div className="text-xs text-gray-400">
+                              <div className="text-xs text-gray-400 dark:text-gray-500">
                                 {worker.phoneNumber}
                               </div>
                             )}
@@ -347,9 +347,9 @@ export default function AdminWorkersPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          worker.role === 'CORPORATE_ADMIN' ? 'bg-purple-100 text-purple-800' :
-                          worker.role === 'COMPANY_ADMIN' ? 'bg-blue-100 text-blue-800' :
-                          'bg-green-100 text-green-800'
+                          worker.role === 'CORPORATE_ADMIN' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' :
+                          worker.role === 'COMPANY_ADMIN' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' :
+                          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
                         }`}>
                           {worker.role === 'CORPORATE_ADMIN' && <Shield className="w-3 h-3 mr-1" />}
                           {worker.role === 'COMPANY_ADMIN' && <ShieldCheck className="w-3 h-3 mr-1" />}
@@ -359,8 +359,8 @@ export default function AdminWorkersPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           worker.status === 'ACTIVE' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-red-100 text-red-800'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
+                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
                         }`}>
                           {worker.status === 'ACTIVE' ? (
                             <>
@@ -375,15 +375,15 @@ export default function AdminWorkersPage() {
                           )}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         {worker.lastLoginAt ? formatDate(worker.lastLoginAt) : (
-                          <span className="text-yellow-600">Never logged in</span>
+                          <span className="text-yellow-600 dark:text-yellow-400">Never logged in</span>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center space-x-2">
                           <button
-                            className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-100"
+                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
                             title="Edit User"
                           >
                             <Edit className="w-4 h-4" />
@@ -392,15 +392,15 @@ export default function AdminWorkersPage() {
                             onClick={() => handleStatusToggle(worker)}
                             className={`p-1 rounded-full ${
                               worker.status === 'ACTIVE'
-                                ? 'text-red-600 hover:text-red-900 hover:bg-red-100'
-                                : 'text-green-600 hover:text-green-900 hover:bg-green-100'
+                                ? 'text-red-600 hover:text-red-900 hover:bg-red-100 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20'
+                                : 'text-green-600 hover:text-green-900 hover:bg-green-100 dark:text-green-400 dark:hover:text-green-300 dark:hover:bg-green-900/20'
                             }`}
                             title={worker.status === 'ACTIVE' ? 'Deactivate User' : 'Activate User'}
                           >
                             {worker.status === 'ACTIVE' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                           </button>
                           <button
-                            className="text-gray-600 hover:text-gray-900 p-1 rounded-full hover:bg-gray-100"
+                            className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                             title="Send Email"
                           >
                             <Mail className="w-4 h-4" />
@@ -416,11 +416,11 @@ export default function AdminWorkersPage() {
             {/* Empty State */}
             {filteredWorkers.length === 0 && (
               <div className="text-center py-12">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Search className="w-8 h-8 text-gray-400" />
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                 </div>
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No workers found</h3>
-                <p className="mt-1 text-sm text-gray-500">
+                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No workers found</h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   {searchTerm || roleFilter 
                     ? 'No workers match your current filters.'
                     : 'Get started by adding your first worker.'
@@ -431,9 +431,9 @@ export default function AdminWorkersPage() {
 
             {/* Pagination */}
             {filteredWorkers.length > 0 && (
-              <div className="px-4 lg:px-6 py-3 border-t border-gray-200">
+              <div className="px-4 lg:px-6 py-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                  <div className="text-sm text-gray-700 text-center sm:text-left">
+                  <div className="text-sm text-gray-700 dark:text-gray-300 text-center sm:text-left">
                     Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
                   </div>
                   <div className="flex items-center justify-center space-x-2">
@@ -445,7 +445,7 @@ export default function AdminWorkersPage() {
                     >
                       Previous
                     </Button>
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
                       Page {pagination.page} of {pagination.totalPages}
                     </span>
                     <Button
@@ -481,18 +481,18 @@ export default function AdminWorkersPage() {
               </span>
             </div>
             <div>
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                 {selectedWorker?.firstName} {selectedWorker?.lastName}
               </h3>
-              <p className="text-sm text-gray-500">{selectedWorker?.email}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{selectedWorker?.email}</p>
             </div>
           </div>
 
           <div className={`p-4 rounded-lg ${
-            statusAction === 'ACTIVE' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
+            statusAction === 'ACTIVE' ? 'bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-800' : 'bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800'
           }`}>
             <p className={`text-sm ${
-              statusAction === 'ACTIVE' ? 'text-green-800' : 'text-red-800'
+              statusAction === 'ACTIVE' ? 'text-green-800 dark:text-green-300' : 'text-red-800 dark:text-red-300'
             }`}>
               {statusAction === 'ACTIVE' 
                 ? '✅ This user will be able to log in and access the system.'
