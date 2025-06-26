@@ -62,12 +62,12 @@ export function Sidebar({ className }: SidebarProps) {
       {/* Mobile Menu Button */}
       <button
         onClick={toggleMobileMenu}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-md border border-gray-200"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
       >
         {isMobileOpen ? (
-          <X className="w-6 h-6 text-gray-600" />
+          <X className="w-6 h-6 text-gray-600 dark:text-gray-300" />
         ) : (
-          <Menu className="w-6 h-6 text-gray-600" />
+          <Menu className="w-6 h-6 text-gray-600 dark:text-gray-300" />
         )}
       </button>
 
@@ -81,12 +81,12 @@ export function Sidebar({ className }: SidebarProps) {
 
       {/* Sidebar */}
       <div className={cn(
-        'fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transform transition-transform duration-300 ease-in-out',
+        'fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#171717] border-r border-gray-700 flex flex-col transform transition-transform duration-300 ease-in-out',
         isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         className
       )}>
         {/* Header */}
-        <div className="p-4 lg:p-6 border-b border-gray-200">
+        <div className="p-4 lg:p-6 border-b border-gray-700">
           <div className="flex items-center space-x-3 mb-4">
             <div className="w-10 h-10 lg:w-12 lg:h-12">
               <Image 
@@ -97,15 +97,15 @@ export function Sidebar({ className }: SidebarProps) {
               />
             </div>
             <div className="hidden sm:block">
-              <h2 className="text-lg font-bold text-gray-900">AMO</h2>
-              <p className="text-xs text-gray-500">Workforce Manager</p>
+              <h2 className="text-lg font-bold text-white">AMO</h2>
+              <p className="text-xs text-gray-400">Workforce Manager</p>
             </div>
           </div>
         </div>
 
         {/* Dashboard Title */}
-        <div className="px-4 lg:px-6 py-3 lg:py-4 border-b border-gray-200">
-          <h2 className="font-semibold text-gray-900 text-sm lg:text-base">
+        <div className="px-4 lg:px-6 py-3 lg:py-4 border-b border-gray-700">
+          <h2 className="font-semibold text-white text-sm lg:text-base">
             {isWorker ? 'Worker Dashboard' : 'Admin Dashboard'}
           </h2>
         </div>
@@ -122,7 +122,7 @@ export function Sidebar({ className }: SidebarProps) {
                   'w-full flex items-center space-x-3 px-3 py-2.5 lg:py-3 rounded-lg text-left transition-colors text-sm lg:text-base',
                   isActive 
                     ? 'bg-[#008080] text-white' 
-                    : 'text-gray-700 hover:bg-gray-100'
+                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                 )}
               >
                 <item.icon className="w-4 h-4 lg:w-5 lg:h-5 flex-shrink-0" />
@@ -133,26 +133,26 @@ export function Sidebar({ className }: SidebarProps) {
         </nav>
 
         {/* User Profile */}
-        <div className="p-3 lg:p-4 border-t border-gray-200">
+        <div className="p-3 lg:p-4 border-t border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3 min-w-0 flex-1">
-              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-xs font-medium text-gray-700">
+              <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-xs font-medium text-white">
                   {user?.firstName?.[0]}{user?.lastName?.[0]}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs lg:text-sm font-medium text-gray-900 truncate">
+                <p className="text-xs lg:text-sm font-medium text-white truncate">
                   {user?.firstName} {user?.lastName}
                 </p>
-                <p className="text-xs text-gray-500 truncate">
+                <p className="text-xs text-gray-400 truncate">
                   {user?.role === 'WORKER' ? 'Worker' : 'Admin'}
                 </p>
               </div>
             </div>
             <button
               onClick={logout}
-              className="p-1.5 text-gray-400 hover:text-gray-600 flex-shrink-0"
+              className="p-1.5 text-gray-400 hover:text-white flex-shrink-0"
               title="Logout"
             >
               <LogOut className="w-4 h-4" />

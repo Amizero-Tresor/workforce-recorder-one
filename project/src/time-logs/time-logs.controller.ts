@@ -170,6 +170,18 @@ export class TimeLogsController {
     return this.timeLogsService.update(currentUser, id, updateTimeLogDto);
   }
 
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update time log (for check-out)' })
+  @ApiResponse({ status: 200, description: 'Time log updated successfully' })
+  @ApiResponse({ status: 404, description: 'Time log not found' })
+  async patch(
+    @GetCurrentUser() currentUser: CurrentUser,
+    @Param('id') id: string,
+    @Body() updateTimeLogDto: UpdateTimeLogDto,
+  ) {
+    return this.timeLogsService.update(currentUser, id, updateTimeLogDto);
+  }
+
   @Patch(':id/review')
   @ApiOperation({ summary: 'Review time log (approve/reject/request edit)' })
   @ApiResponse({ status: 200, description: 'Time log reviewed successfully' })

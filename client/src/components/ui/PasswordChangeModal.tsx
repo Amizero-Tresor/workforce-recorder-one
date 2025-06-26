@@ -85,26 +85,26 @@ export function PasswordChangeModal({ isOpen, onClose, isFirstLogin = false }: P
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         {isFirstLogin && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm text-blue-800">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <p className="text-sm text-blue-800 dark:text-blue-300">
               🔐 For security reasons, you must set a new password before accessing the system.
             </p>
           </div>
         )}
 
         <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Current Password
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Lock className="h-5 w-5 text-gray-400" />
+              <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
             </div>
             <input
               type={showPasswords.current ? "text" : "password"}
               value={formData.currentPassword}
               onChange={(e) => setFormData(prev => ({ ...prev, currentPassword: e.target.value }))}
-              className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               required
             />
             <button
@@ -113,28 +113,28 @@ export function PasswordChangeModal({ isOpen, onClose, isFirstLogin = false }: P
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
               {showPasswords.current ? (
-                <EyeOff className="h-5 w-5 text-gray-400" />
+                <EyeOff className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               ) : (
-                <Eye className="h-5 w-5 text-gray-400" />
+                <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               )}
             </button>
           </div>
         </div>
 
         <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             New Password
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Lock className="h-5 w-5 text-gray-400" />
+              <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
             </div>
             <input
               type={showPasswords.new ? "text" : "password"}
               value={formData.newPassword}
               onChange={(e) => setFormData(prev => ({ ...prev, newPassword: e.target.value }))}
-              className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                errors.newPassword ? 'border-red-300' : 'border-gray-300'
+              className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                errors.newPassword ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
               }`}
               required
             />
@@ -144,21 +144,21 @@ export function PasswordChangeModal({ isOpen, onClose, isFirstLogin = false }: P
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
               {showPasswords.new ? (
-                <EyeOff className="h-5 w-5 text-gray-400" />
+                <EyeOff className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               ) : (
-                <Eye className="h-5 w-5 text-gray-400" />
+                <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               )}
             </button>
           </div>
           {errors.newPassword && (
-            <p className="text-sm text-red-600 mt-1">{errors.newPassword}</p>
+            <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.newPassword}</p>
           )}
         </div>
 
         {/* Password Requirements */}
         {formData.newPassword && (
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="text-sm font-medium text-gray-700 mb-2">Password Requirements:</h4>
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password Requirements:</h4>
             <div className="space-y-1">
               {Object.entries({
                 'At least 8 characters': passwordValidation.requirements.minLength,
@@ -167,7 +167,7 @@ export function PasswordChangeModal({ isOpen, onClose, isFirstLogin = false }: P
                 'One number': passwordValidation.requirements.hasNumber,
                 'One special character (@$!%*?&)': passwordValidation.requirements.hasSpecial,
               }).map(([requirement, met]) => (
-                <div key={requirement} className={`flex items-center text-xs ${met ? 'text-green-600' : 'text-gray-500'}`}>
+                <div key={requirement} className={`flex items-center text-xs ${met ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
                   <span className="mr-2">{met ? '✅' : '⭕'}</span>
                   {requirement}
                 </div>
@@ -177,19 +177,19 @@ export function PasswordChangeModal({ isOpen, onClose, isFirstLogin = false }: P
         )}
 
         <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Confirm New Password
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Lock className="h-5 w-5 text-gray-400" />
+              <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
             </div>
             <input
               type={showPasswords.confirm ? "text" : "password"}
               value={formData.confirmPassword}
               onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-              className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
+              className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                errors.confirmPassword ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
               }`}
               required
             />
@@ -199,14 +199,14 @@ export function PasswordChangeModal({ isOpen, onClose, isFirstLogin = false }: P
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
             >
               {showPasswords.confirm ? (
-                <EyeOff className="h-5 w-5 text-gray-400" />
+                <EyeOff className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               ) : (
-                <Eye className="h-5 w-5 text-gray-400" />
+                <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               )}
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="text-sm text-red-600 mt-1">{errors.confirmPassword}</p>
+            <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.confirmPassword}</p>
           )}
         </div>
 

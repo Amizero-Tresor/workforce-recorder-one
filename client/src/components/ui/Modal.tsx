@@ -66,18 +66,18 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
         <div
-          className={`relative w-full ${sizeClasses[size]} transform rounded-lg bg-white shadow-xl transition-all duration-200 ease-out ${
+          className={`relative w-full ${sizeClasses[size]} transform rounded-lg bg-white dark:bg-gray-800 shadow-xl transition-all duration-200 ease-out ${
             isAnimating 
               ? 'translate-y-0 opacity-100 scale-100' 
               : 'translate-y-4 opacity-0 scale-95'
           }`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-4 lg:p-6 border-b border-gray-200">
-            <h3 className="text-lg lg:text-xl font-semibold text-gray-900 pr-4">{title}</h3>
+          <div className="flex items-center justify-between p-4 lg:p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white pr-4">{title}</h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <X className="w-5 h-5" />
             </button>
