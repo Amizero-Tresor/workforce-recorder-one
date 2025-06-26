@@ -17,8 +17,21 @@ export function formatTime(date: string | Date) {
   return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
+export function formatDuration(totalHours: number) {
+  const hours = Math.floor(totalHours);
+  const minutes = Math.round((totalHours - hours) * 60);
+  
+  if (hours === 0) {
+    return `${minutes}m`;
+  } else if (minutes === 0) {
+    return `${hours}h`;
+  } else {
+    return `${hours}h ${minutes}m`;
+  }
+}
+
 export function formatHours(hours: number) {
-  return `${hours.toFixed(1)}h`;
+  return formatDuration(hours);
 }
 
 export function getStatusColor(status: string) {

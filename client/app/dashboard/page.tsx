@@ -19,7 +19,7 @@ import {
   Timer,
   MapPin
 } from 'lucide-react';
-import { formatTime, formatHours } from '@/lib/utils';
+import { formatTime, formatDuration } from '@/lib/utils';
 import toast from 'react-hot-toast';
 
 export default function WorkerDashboard() {
@@ -174,13 +174,17 @@ export default function WorkerDashboard() {
     }
   };
 
-  const getWorkedHoursToday = () => {
-    if (!currentTimeLog || !currentTimeLog.startTime) return 0;
+  const getWorkedTimeToday = () => {
+    if (!currentTimeLog || !currentTimeLog.startTime) return { hours: 0, minutes: 0 };
     
     const start = new Date(currentTimeLog.startTime);
     const now = new Date();
     const diffMs = now.getTime() - start.getTime();
-    return diffMs / (1000 * 60 * 60); // Convert to hours
+    const totalMinutes = Math.floor(diffMs / (1000 * 60));
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    
+    return { hours, minutes };
   };
 
   if (loading) {
@@ -190,6 +194,8 @@ export default function WorkerDashboard() {
       </div>
     );
   }
+
+  const workedTime = getWorkedTimeToday();
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -222,9 +228,9 @@ export default function WorkerDashboard() {
                 </div>
                 <div className="text-center sm:text-right">
                   <div className="text-2xl lg:text-3xl font-bold">
-                    {getWorkedHoursToday().toFixed(1)}h
+                    {workedTime.hours}h {workedTime.minutes}m
                   </div>
-                  <p className="text-green-100 text-sm lg:text-base">Hours Today</p>
+                  <p className="text-green-100 text-sm lg:text-base">Time Today</p>
                 </div>
               </div>
             </div>
@@ -235,9 +241,9 @@ export default function WorkerDashboard() {
             <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xl lg:text-2xl font-bold text-gray-900">{(stats.thisWeekHours || 0).toFixed(1)}h</p>
+                  <p className="text-xl lg:text-2xl font-bold text-gray-900">{formatDuration(stats.thisWeekHours || 0)}</p>
                   <p className="text-sm text-gray-600">This Week</p>
-                  <p className="text-xs text-blue-600">+2.5h from last week</p>
+                  <p className="text-xs text-blue-600">+2h 30m from last week</p>
                 </div>
                 <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                   <Clock className="w-5 h-5 lg:w-6 lg:h-6 text-blue-600" />
@@ -248,7 +254,7 @@ export default function WorkerDashboard() {
             <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xl lg:text-2xl font-bold text-gray-900">{(stats.totalHoursWorked || 0).toFixed(1)}h</p>
+                  <p className="text-xl lg:text-2xl font-bold text-gray-900">{formatDuration(stats.totalHoursWorked || 0)}</p>
                   <p className="text-sm text-gray-600">This Month</p>
                   <p className="text-xs text-green-600">On track</p>
                 </div>
@@ -374,8 +380,8 @@ export default function WorkerDashboard() {
                     <span className="font-medium">{formatTime(currentTime.toISOString())}</span>
                   </div>
                   <div className="flex justify-between font-semibold">
-                    <span>Hours Worked:</span>
-                    <span>{getWorkedHoursToday().toFixed(1)}h</span>
+                    <span>Time Worked:</span>
+                    <span>{workedTime.hours}h {workedTime.minutes}m</span>
                   </div>
                 </div>
               </div>

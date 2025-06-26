@@ -100,7 +100,7 @@ export class ExportService {
       'Project': timeLog.project.name,
       'Start Time': timeLog.startTime ? new Date(timeLog.startTime).toLocaleString() : '',
       'End Time': timeLog.endTime ? new Date(timeLog.endTime).toLocaleString() : '',
-      'Total Hours': timeLog.totalHours || 0,
+      'Total Time': this.formatDuration(timeLog.totalHours || 0),
       'Description': timeLog.description || '',
       'Status': timeLog.status,
       'Reviewer': timeLog.reviewer ? `${timeLog.reviewer.firstName} ${timeLog.reviewer.lastName}` : '',
@@ -147,5 +147,18 @@ export class ExportService {
       'Projects Count': company._count?.projects || 0,
       'Created At': new Date(company.createdAt).toLocaleString(),
     };
+  }
+
+  private formatDuration(totalHours: number): string {
+    const hours = Math.floor(totalHours);
+    const minutes = Math.round((totalHours - hours) * 60);
+    
+    if (hours === 0) {
+      return `${minutes}m`;
+    } else if (minutes === 0) {
+      return `${hours}h`;
+    } else {
+      return `${hours}h ${minutes}m`;
+    }
   }
 }

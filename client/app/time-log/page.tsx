@@ -21,7 +21,7 @@ import {
   Filter,
   RefreshCw
 } from 'lucide-react';
-import { formatDate, formatTime, getStatusColor } from '@/lib/utils';
+import { formatDate, formatTime, formatDuration, getStatusColor } from '@/lib/utils';
 import toast from 'react-hot-toast';
 
 export default function WorkerTimeLogPage() {
@@ -181,7 +181,7 @@ export default function WorkerTimeLogPage() {
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                 <div>
                   <h1 className="text-lg lg:text-xl font-semibold text-gray-900">My Time Logs</h1>
-                  <p className="text-sm text-gray-600">Track and manage your work hours</p>
+                  <p className="text-sm text-gray-600">Track and manage your work time</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                   <Button
@@ -301,8 +301,8 @@ export default function WorkerTimeLogPage() {
                       <span>{formatTime(log.startTime)} - {log.endTime ? formatTime(log.endTime) : 'Ongoing'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Hours:</span>
-                      <span className="font-medium">{log.totalHours?.toFixed(1) || '0.0'}h</span>
+                      <span className="text-gray-500">Duration:</span>
+                      <span className="font-medium">{formatDuration(log.totalHours || 0)}</span>
                     </div>
                     {log.description && (
                       <div className="flex justify-between">
@@ -349,7 +349,7 @@ export default function WorkerTimeLogPage() {
                       Time Period
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Hours
+                      Duration
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
@@ -384,7 +384,7 @@ export default function WorkerTimeLogPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
-                          {log.totalHours?.toFixed(1) || '0.0'}h
+                          {formatDuration(log.totalHours || 0)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

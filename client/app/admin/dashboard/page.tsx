@@ -18,6 +18,7 @@ import {
   Activity,
   Target
 } from 'lucide-react';
+import { formatDuration } from '@/lib/utils';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -173,8 +174,8 @@ export default function AdminDashboard() {
                 <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xl lg:text-2xl font-bold text-gray-900">{(stats.thisWeekHours || 0).toFixed(1)}h</p>
-                      <p className="text-sm text-gray-600">Hours This Week</p>
+                      <p className="text-xl lg:text-2xl font-bold text-gray-900">{formatDuration(stats.thisWeekHours || 0)}</p>
+                      <p className="text-sm text-gray-600">Time This Week</p>
                       <p className="text-xs text-blue-600">Team total</p>
                     </div>
                     <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -243,25 +244,17 @@ export default function AdminDashboard() {
                 <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
                   <div className="flex items-center space-x-3">
                     <Clock className="w-5 h-5 text-blue-600" />
-                    <span className="text-sm font-medium text-gray-900">Total Hours</span>
+                    <span className="text-sm font-medium text-gray-900">Total Time</span>
                   </div>
-                  <span className="text-lg font-bold text-blue-600">{(stats.thisWeekHours || 0).toFixed(1)}h</span>
+                  <span className="text-lg font-bold text-blue-600">{formatDuration(stats.thisWeekHours || 0)}</span>
                 </div>
                 
                 <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
                   <div className="flex items-center space-x-3">
                     <Target className="w-5 h-5 text-purple-600" />
-                    <span className="text-sm font-medium text-gray-900">Productivity Rate</span>
+                    <span className="text-sm font-medium text-gray-900">Active Projects</span>
                   </div>
-                  <span className="text-lg font-bold text-purple-600">94%</span>
-                </div>
-                
-                <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                    <span className="text-sm font-medium text-gray-900">Attendance Rate</span>
-                  </div>
-                  <span className="text-lg font-bold text-yellow-600">96%</span>
+                  <span className="text-lg font-bold text-purple-600">{stats.activeProjects || 0}</span>
                 </div>
               </div>
             </div>

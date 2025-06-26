@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
-import { TimeLog, PaginatedResponse, TimeLogFilters } from '@/types';
+import { TimeLog, PaginatedResponse, TimeLogFilters, Project } from '@/types';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/Button';
@@ -20,19 +20,22 @@ import {
   Eye,
   FileText
 } from 'lucide-react';
-import { formatDate, formatTime, getStatusColor } from '@/lib/utils';
+import { formatDate, formatTime, formatDuration, getStatusColor } from '@/lib/utils';
 import toast from 'react-hot-toast';
 
 export default function AdminTimeLogsPage() {
   const { user } = useAuth();
   const [timeLogs, setTimeLogs] = useState<TimeLog[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedLogs, setSelectedLogs] = useState<string[]>([]);
   const [bulkAction, setBulkAction] = useState<'APPROVED' | 'REJECTED' | 'EDIT_REQUESTED' | ''>('');
   const [feedback, setFeedback] = useState('');
   const [showBulkModal, setShowBulkModal] = useState(false);
+  const [showEditRequestModal, setShowEditRequestModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedTimeLog, setSelectedTimeLog] = useState<TimeLog | null>(null);
+  const [editRequestTimeLogId, setEditRequestTimeLogId] = useState<string>('');
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -49,6 +52,7 @@ export default function AdminTimeLogsPage() {
 
   useEffect(() => {
     fetchTimeLogs();
+    fetchProjects();
   }, [pagination.page, filters]);
 
   const fetchTimeLogs = async () => {
@@ -74,6 +78,15 @@ export default function AdminTimeLogsPage() {
       toast.error('Failed to fetch time logs');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchProjects = async () => {
+    try {
+      const response = await api.get('/projects');
+      setProjects(response.data.data);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
     }
   };
 
@@ -124,11 +137,10 @@ export default function AdminTimeLogsPage() {
     }
   };
 
-  const handleSingleAction = async (logId: string, action: 'APPROVED' | 'REJECTED' | 'EDIT_REQUESTED') => {
+  const handleSingleAction = async (logId: string, action: 'APPROVED' | 'REJECTED') => {
     try {
       await api.patch(`/time-logs/${logId}/review`, {
         status: action,
-        feedback: action === 'EDIT_REQUESTED' ? 'Please provide more details' : undefined
       });
 
       toast.success(`Time log ${action.toLowerCase()}`);
@@ -136,6 +148,33 @@ export default function AdminTimeLogsPage() {
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to update time log');
     }
+  };
+
+  const handleEditRequest = async () => {
+    if (!feedback.trim()) {
+      toast.error('Please provide feedback for the edit request');
+      return;
+    }
+
+    try {
+      await api.patch(`/time-logs/${editRequestTimeLogId}/review`, {
+        status: 'EDIT_REQUESTED',
+        feedback: feedback
+      });
+
+      toast.success('Edit request sent successfully');
+      setShowEditRequestModal(false);
+      setEditRequestTimeLogId('');
+      setFeedback('');
+      fetchTimeLogs();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to send edit request');
+    }
+  };
+
+  const openEditRequestModal = (logId: string) => {
+    setEditRequestTimeLogId(logId);
+    setShowEditRequestModal(true);
   };
 
   const handleExport = async (format: 'csv' | 'excel') => {
@@ -212,7 +251,7 @@ export default function AdminTimeLogsPage() {
 
             {/* Filters */}
             <div className="px-4 lg:px-6 py-4 border-b border-gray-200 bg-gray-50">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <select
                   value={filters.status}
                   onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
@@ -223,6 +262,19 @@ export default function AdminTimeLogsPage() {
                   <option value="APPROVED">Approved</option>
                   <option value="REJECTED">Rejected</option>
                   <option value="EDIT_REQUESTED">Edit Requested</option>
+                </select>
+
+                <select
+                  value={filters.projectId}
+                  onChange={(e) => setFilters(prev => ({ ...prev, projectId: e.target.value }))}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm"
+                >
+                  <option value="">All Projects</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.name}
+                    </option>
+                  ))}
                 </select>
                 
                 <input
@@ -240,32 +292,6 @@ export default function AdminTimeLogsPage() {
                   className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm"
                   placeholder="End Date"
                 />
-                
-                <Button
-                  onClick={fetchTimeLogs}
-                  className="flex items-center justify-center space-x-2 bg-[#008080] hover:bg-[#006666]"
-                  size="sm"
-                >
-                  <Filter className="w-4 h-4" />
-                  <span>Apply Filters</span>
-                </Button>
-                
-                <Button
-                  onClick={() => {
-                    setFilters({
-                      status: '',
-                      projectId: '',
-                      userId: '',
-                      startDate: '',
-                      endDate: ''
-                    });
-                    fetchTimeLogs();
-                  }}
-                  variant="outline"
-                  size="sm"
-                >
-                  Clear Filters
-                </Button>
               </div>
             </div>
 
@@ -358,8 +384,8 @@ export default function AdminTimeLogsPage() {
                       <span>{formatTime(log.startTime)} - {log.endTime ? formatTime(log.endTime) : 'Ongoing'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Hours:</span>
-                      <span className="font-medium">{log.totalHours?.toFixed(1) || '0.0'}h</span>
+                      <span className="text-gray-500">Duration:</span>
+                      <span className="font-medium">{formatDuration(log.totalHours || 0)}</span>
                     </div>
                   </div>
 
@@ -381,7 +407,7 @@ export default function AdminTimeLogsPage() {
                           <X className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleSingleAction(log.id, 'EDIT_REQUESTED')}
+                          onClick={() => openEditRequestModal(log.id)}
                           className="text-orange-600 hover:text-orange-900 p-2 rounded-full hover:bg-orange-100"
                           title="Request Edit"
                         >
@@ -427,7 +453,7 @@ export default function AdminTimeLogsPage() {
                       Check Out
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Total Hours
+                      Total Time
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
@@ -478,7 +504,7 @@ export default function AdminTimeLogsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
-                          {log.totalHours?.toFixed(1) || '0.0'}h
+                          {formatDuration(log.totalHours || 0)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -508,7 +534,7 @@ export default function AdminTimeLogsPage() {
                                 <X className="w-4 h-4" />
                               </button>
                               <button
-                                onClick={() => handleSingleAction(log.id, 'EDIT_REQUESTED')}
+                                onClick={() => openEditRequestModal(log.id)}
                                 className="text-orange-600 hover:text-orange-900 p-1 rounded-full hover:bg-orange-100 transition-colors duration-150"
                                 title="Request Edit"
                               >
@@ -576,6 +602,54 @@ export default function AdminTimeLogsPage() {
           </div>
         </main>
       </div>
+
+      {/* Edit Request Modal */}
+      <Modal
+        isOpen={showEditRequestModal}
+        onClose={() => {
+          setShowEditRequestModal(false);
+          setEditRequestTimeLogId('');
+          setFeedback('');
+        }}
+        title="Request Edit"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Feedback for Worker *
+            </label>
+            <textarea
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              placeholder="Please explain what needs to be corrected or provide additional details..."
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+              rows={4}
+              required
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
+            <Button
+              onClick={() => {
+                setShowEditRequestModal(false);
+                setEditRequestTimeLogId('');
+                setFeedback('');
+              }}
+              variant="outline"
+              className="w-full sm:w-auto"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleEditRequest}
+              disabled={!feedback.trim()}
+              className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700"
+            >
+              Send Edit Request
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Bulk Action Modal */}
       <Modal

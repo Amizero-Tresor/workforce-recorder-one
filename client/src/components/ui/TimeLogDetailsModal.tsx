@@ -1,7 +1,7 @@
 'use client';
 
 import { Modal } from './Modal';
-import { formatDate, formatTime } from '@/lib/utils';
+import { formatDate, formatTime, formatDuration } from '@/lib/utils';
 import { Clock, User, FolderOpen, MessageSquare, Calendar } from 'lucide-react';
 
 interface TimeLogDetailsModalProps {
@@ -13,11 +13,11 @@ interface TimeLogDetailsModalProps {
 export function TimeLogDetailsModal({ isOpen, onClose, timeLog }: TimeLogDetailsModalProps) {
   if (!timeLog) return null;
 
-  const calculateHours = () => {
+  const calculateDuration = () => {
     if (!timeLog.startTime || !timeLog.endTime) return 0;
     const start = new Date(timeLog.startTime);
     const end = new Date(timeLog.endTime);
-    return ((end.getTime() - start.getTime()) / (1000 * 60 * 60)).toFixed(1);
+    return (end.getTime() - start.getTime()) / (1000 * 60 * 60);
   };
 
   return (
@@ -82,9 +82,9 @@ export function TimeLogDetailsModal({ isOpen, onClose, timeLog }: TimeLogDetails
 
           <div className="bg-teal-50 rounded-lg p-4 text-center">
             <Clock className="w-5 h-5 lg:w-6 lg:h-6 text-teal-600 mx-auto mb-2" />
-            <h4 className="font-medium text-teal-900 mb-1 text-sm lg:text-base">Total Hours</h4>
+            <h4 className="font-medium text-teal-900 mb-1 text-sm lg:text-base">Total Time</h4>
             <p className="text-base lg:text-lg font-bold text-teal-800">
-              {timeLog.totalHours?.toFixed(1) || calculateHours()}h
+              {formatDuration(timeLog.totalHours || calculateDuration())}
             </p>
           </div>
         </div>
