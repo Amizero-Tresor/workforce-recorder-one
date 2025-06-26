@@ -129,7 +129,8 @@ export default function WorkerDashboard() {
     try {
       console.log('Checking out time log:', currentTimeLog.id);
       
-      await api.patch(`/time-logs/${currentTimeLog.id}`, {
+      // Use PUT instead of PATCH for check-out
+      await api.put(`/time-logs/${currentTimeLog.id}`, {
         endTime: new Date().toISOString(),
         description: manualEntry.description || currentTimeLog.description || 'Checked out',
       });
@@ -213,7 +214,7 @@ export default function WorkerDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#171717]">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#008080]"></div>
       </div>
     );
@@ -222,7 +223,7 @@ export default function WorkerDashboard() {
   const workedTime = getWorkedTimeToday();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#171717] flex">
       <Sidebar />
       
       <div className="flex-1 flex flex-col lg:ml-0">
@@ -379,7 +380,7 @@ export default function WorkerDashboard() {
                     value={manualEntry.description}
                     onChange={(e) => setManualEntry(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="What are you working on today?"
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                     rows={3}
                   />
                 </div>
@@ -490,7 +491,7 @@ export default function WorkerDashboard() {
                     value={manualEntry.description}
                     onChange={(e) => setManualEntry(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="Describe what you worked on..."
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                     rows={3}
                   />
                 </div>

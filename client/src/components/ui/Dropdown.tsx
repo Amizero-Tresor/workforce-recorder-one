@@ -53,7 +53,7 @@ export function Dropdown({ isOpen, onClose, children, className = '' }: Dropdown
   return (
     <div
       ref={dropdownRef}
-      className={`absolute z-50 transition-all duration-150 ease-out ${
+      className={`absolute z-50 transition-all duration-150 ease-out border border-gray-200 dark:border-gray-700 ${
         isAnimating 
           ? 'opacity-100 translate-y-0 scale-100' 
           : 'opacity-0 translate-y-1 scale-95'

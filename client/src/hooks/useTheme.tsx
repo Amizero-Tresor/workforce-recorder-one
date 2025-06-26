@@ -7,14 +7,17 @@ type Theme = 'light' | 'dark';
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
+  setTheme: (theme: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>('light');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     // Check for saved theme preference or default to 'light'
     const savedTheme = localStorage.getItem('theme') as Theme;
     if (savedTheme) {
@@ -27,6 +30,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
+    
     // Apply theme to document
     const root = document.documentElement;
     if (theme === 'dark') {
@@ -37,14 +42,19 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     
     // Save theme preference
     localStorage.setItem('theme', theme);
-  }, [theme]);
+  }, [theme, mounted]);
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
+  // Prevent hydration mismatch
+  if (!mounted) {
+    return <div className="min-h-screen bg-white">{children}</div>;
+  }
+
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );

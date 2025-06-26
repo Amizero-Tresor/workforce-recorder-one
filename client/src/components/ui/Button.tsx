@@ -16,14 +16,14 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
-  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none transform hover:scale-105 active:scale-95';
+  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none transform hover:scale-105 active:scale-95 border';
   
   const variants = {
-    primary: 'bg-primary-500 text-white hover:bg-primary-600 shadow-md hover:shadow-lg border border-transparent',
-    secondary: 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 shadow-sm hover:shadow-md border border-gray-300 dark:border-gray-600',
-    outline: 'border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm hover:shadow-md',
-    ghost: 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 border border-transparent',
-    danger: 'bg-red-500 text-white hover:bg-red-600 shadow-md hover:shadow-lg border border-transparent',
+    primary: 'bg-primary-500 text-white hover:bg-primary-600 shadow-md hover:shadow-lg border-primary-500 hover:border-primary-600',
+    secondary: 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 shadow-sm hover:shadow-md border-gray-300 dark:border-gray-600',
+    outline: 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm hover:shadow-md',
+    ghost: 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 border-transparent hover:border-gray-200 dark:hover:border-gray-700',
+    danger: 'bg-red-500 text-white hover:bg-red-600 shadow-md hover:shadow-lg border-red-500 hover:border-red-600',
   };
 
   const sizes = {
