@@ -39,7 +39,7 @@ export function Header() {
 
   return (
     <>
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 lg:px-6 py-3 lg:py-4">
+      <header className="bg-white dark:bg-[#171717] border-b border-gray-200 dark:border-gray-700 px-4 lg:px-6 py-3 lg:py-4">
         <div className="flex items-center justify-between">
           {/* Left side - Role badge and title */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
@@ -83,7 +83,7 @@ export function Header() {
               <Dropdown
                 isOpen={showNotifications}
                 onClose={() => setShowNotifications(false)}
-                className="right-0 mt-2 w-72 lg:w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700"
+                className="right-0 mt-2 w-72 lg:w-80 bg-white dark:bg-[#171717] rounded-lg shadow-lg border border-gray-200 dark:border-gray-700"
               >
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                   <h3 className="font-medium text-gray-900 dark:text-white">Notifications</h3>

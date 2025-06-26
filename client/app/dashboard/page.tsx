@@ -129,8 +129,8 @@ export default function WorkerDashboard() {
     try {
       console.log('Checking out time log:', currentTimeLog.id);
       
-      // Use PUT instead of PATCH for check-out
-      await api.put(`/time-logs/${currentTimeLog.id}`, {
+      // Use PATCH for check-out
+      await api.patch(`/time-logs/${currentTimeLog.id}`, {
         endTime: new Date().toISOString(),
         description: manualEntry.description || currentTimeLog.description || 'Checked out',
       });
@@ -263,7 +263,7 @@ export default function WorkerDashboard() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-[#171717] rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">{formatTimeWorked(stats.thisWeekHours || 0)}</p>
@@ -276,7 +276,7 @@ export default function WorkerDashboard() {
               </div>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-[#171717] rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">{formatTimeWorked(stats.totalHoursWorked || 0)}</p>
@@ -289,7 +289,7 @@ export default function WorkerDashboard() {
               </div>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-[#171717] rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">{stats.logsApproved || 0}</p>
@@ -302,7 +302,7 @@ export default function WorkerDashboard() {
               </div>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-[#171717] rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">{stats.logsPending || 0}</p>
@@ -318,7 +318,7 @@ export default function WorkerDashboard() {
 
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
             {/* Time Tracking */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#171717] rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
               <div className="flex items-center space-x-2 mb-4 lg:mb-6">
                 <div className="w-8 h-8 bg-[#008080]/10 rounded-lg flex items-center justify-center">
                   <Timer className="w-5 h-5 text-[#008080]" />
@@ -335,7 +335,7 @@ export default function WorkerDashboard() {
                   <select
                     value={manualEntry.projectId}
                     onChange={(e) => setManualEntry(prev => ({ ...prev, projectId: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                     disabled={isCheckedIn}
                   >
                     <option value="">Choose a project</option>
@@ -380,7 +380,7 @@ export default function WorkerDashboard() {
                     value={manualEntry.description}
                     onChange={(e) => setManualEntry(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="What are you working on today?"
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-[#171717] text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                     rows={3}
                   />
                 </div>
@@ -413,7 +413,7 @@ export default function WorkerDashboard() {
             </div>
 
             {/* Manual Time Entry */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#171717] rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
               <div className="flex items-center space-x-2 mb-4 lg:mb-6">
                 <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">
                   <FileText className="w-5 h-5 text-orange-600 dark:text-orange-400" />
@@ -431,7 +431,7 @@ export default function WorkerDashboard() {
                     value={manualEntry.date}
                     onChange={(e) => setManualEntry(prev => ({ ...prev, date: e.target.value }))}
                     max={new Date().toISOString().split('T')[0]}
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                     required
                   />
                 </div>
@@ -445,7 +445,7 @@ export default function WorkerDashboard() {
                       type="time"
                       value={manualEntry.startTime}
                       onChange={(e) => setManualEntry(prev => ({ ...prev, startTime: e.target.value }))}
-                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                       required
                     />
                   </div>
@@ -458,7 +458,7 @@ export default function WorkerDashboard() {
                       type="time"
                       value={manualEntry.endTime}
                       onChange={(e) => setManualEntry(prev => ({ ...prev, endTime: e.target.value }))}
-                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                       required
                     />
                   </div>
@@ -471,7 +471,7 @@ export default function WorkerDashboard() {
                   <select
                     value={manualEntry.projectId}
                     onChange={(e) => setManualEntry(prev => ({ ...prev, projectId: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                     required
                   >
                     <option value="">Choose a project</option>
@@ -491,7 +491,7 @@ export default function WorkerDashboard() {
                     value={manualEntry.description}
                     onChange={(e) => setManualEntry(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="Describe what you worked on..."
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-[#171717] text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                     rows={3}
                   />
                 </div>
