@@ -48,9 +48,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
-  // Prevent hydration mismatch
+  // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
-    return <div className="min-h-screen bg-white">{children}</div>;
+    return (
+      <ThemeContext.Provider value={{ theme: 'light', toggleTheme: () => {}, setTheme: () => {} }}>
+        <div className="min-h-screen bg-white">
+          {children}
+        </div>
+      </ThemeContext.Provider>
+    );
   }
 
   return (
@@ -63,6 +69,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 export function useTheme() {
   const context = useContext(ThemeContext);
   if (context === undefined) {
+    // Return default values during SSR to prevent errors
+    if (typeof window === 'undefined') {
+      return { theme: 'light' as Theme, toggleTheme: () => {}, setTheme: () => {} };
+    }
     throw new Error('useTheme must be used within a ThemeProvider');
   }
   return context;

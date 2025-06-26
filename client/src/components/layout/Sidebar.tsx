@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 import { useRouter, usePathname } from 'next/navigation';
@@ -31,6 +31,11 @@ export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isWorker = user?.role === 'WORKER';
   const isAdmin = user?.role === 'COMPANY_ADMIN' || user?.role === 'CORPORATE_ADMIN';
@@ -58,6 +63,38 @@ export function Sidebar({ className }: SidebarProps) {
   const toggleMobileMenu = () => {
     setIsMobileOpen(!isMobileOpen);
   };
+
+  // Don't render theme-dependent classes until mounted
+  if (!mounted) {
+    return (
+      <div className="fixed lg:static inset-y-0 left-0 z-50 w-64 border-r flex flex-col transform transition-all duration-300 ease-in-out bg-white border-gray-200 -translate-x-full lg:translate-x-0">
+        <div className="p-4 lg:p-6 border-b border-gray-200">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="w-10 h-10 lg:w-12 lg:h-12">
+              <Image 
+                src={amoLogo} 
+                alt="AMO Logo" 
+                className="w-full h-full object-contain"
+                sizes="(max-width: 768px) 40px, 48px"
+              />
+            </div>
+            <div className="hidden sm:block">
+              <h2 className="text-lg font-bold text-gray-900">AMO</h2>
+              <p className="text-xs text-gray-500">Workforce Manager</p>
+            </div>
+          </div>
+        </div>
+        <div className="px-4 lg:px-6 py-3 lg:py-4 border-b border-gray-200">
+          <h2 className="font-semibold text-sm lg:text-base text-gray-900">
+            {isWorker ? 'Worker Dashboard' : 'Admin Dashboard'}
+          </h2>
+        </div>
+        <nav className="flex-1 px-3 lg:px-4 py-4 space-y-1 overflow-y-auto">
+          {/* Loading skeleton */}
+        </nav>
+      </div>
+    );
+  }
 
   return (
     <>
