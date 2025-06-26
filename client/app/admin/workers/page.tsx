@@ -51,12 +51,20 @@ export default function AdminWorkersPage() {
       setLoading(true);
       const params = new URLSearchParams({
         page: pagination.page.toString(),
-        limit: pagination.limit.toString(),
-        ...(roleFilter && { role: roleFilter })
+        limit: pagination.limit.toString()
       });
+
+      // Add role filter to params if selected
+      if (roleFilter) {
+        params.append('role', roleFilter);
+      }
+
+      console.log('Fetching workers with params:', params.toString());
 
       const response = await api.get(`/users?${params}`);
       const data: PaginatedResponse<User> = response.data;
+      
+      console.log('Workers response:', data);
       
       setWorkers(data.data);
       setPagination(prev => ({
@@ -96,9 +104,13 @@ export default function AdminWorkersPage() {
   const handleExport = async (format: 'csv' | 'excel') => {
     try {
       const params = new URLSearchParams({
-        format,
-        ...(roleFilter && { role: roleFilter })
+        format
       });
+
+      // Add role filter to export params if selected
+      if (roleFilter) {
+        params.append('role', roleFilter);
+      }
 
       const response = await api.get(`/users/export?${params}`, {
         responseType: 'blob'
@@ -195,7 +207,11 @@ export default function AdminWorkersPage() {
                 </div>
                 <select
                   value={roleFilter}
-                  onChange={(e) => setRoleFilter(e.target.value)}
+                  onChange={(e) => {
+                    console.log('Role filter changed to:', e.target.value);
+                    setRoleFilter(e.target.value);
+                    setPagination(prev => ({ ...prev, page: 1 })); // Reset to first page when filter changes
+                  }}
                   className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                 >
                   <option value="">All Roles</option>
@@ -270,12 +286,13 @@ export default function AdminWorkersPage() {
                   </div>
 
                   <div className="flex items-center justify-end space-x-2">
-                    <button
+                    {/* Commented out Edit User button - might need in future */}
+                    {/* <button
                       className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
                       title="Edit User"
                     >
                       <Edit className="w-4 h-4" />
-                    </button>
+                    </button> */}
                     <button
                       onClick={() => handleStatusToggle(worker)}
                       className={`p-2 rounded-full ${
@@ -287,12 +304,13 @@ export default function AdminWorkersPage() {
                     >
                       {worker.status === 'ACTIVE' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                     </button>
-                    <button
+                    {/* Commented out Send Email button - might need in future */}
+                    {/* <button
                       className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                       title="Send Email"
                     >
                       <Mail className="w-4 h-4" />
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               ))}
@@ -382,12 +400,13 @@ export default function AdminWorkersPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center space-x-2">
-                          <button
+                          {/* Commented out Edit User button - might need in future */}
+                          {/* <button
                             className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
                             title="Edit User"
                           >
                             <Edit className="w-4 h-4" />
-                          </button>
+                          </button> */}
                           <button
                             onClick={() => handleStatusToggle(worker)}
                             className={`p-1 rounded-full ${
@@ -399,12 +418,13 @@ export default function AdminWorkersPage() {
                           >
                             {worker.status === 'ACTIVE' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                           </button>
-                          <button
+                          {/* Commented out Send Email button - might need in future */}
+                          {/* <button
                             className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                             title="Send Email"
                           >
                             <Mail className="w-4 h-4" />
-                          </button>
+                          </button> */}
                         </div>
                       </td>
                     </tr>
@@ -435,6 +455,11 @@ export default function AdminWorkersPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                   <div className="text-sm text-gray-700 dark:text-gray-300 text-center sm:text-left">
                     Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
+                    {roleFilter && (
+                      <span className="text-blue-600 dark:text-blue-400 ml-1">
+                        (filtered by {getRoleDisplayName(roleFilter)})
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center justify-center space-x-2">
                     <Button
