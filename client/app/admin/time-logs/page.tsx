@@ -202,6 +202,19 @@ export default function AdminTimeLogsPage() {
     }
   };
 
+  const formatTimeWorked = (totalHours: number) => {
+    const hours = Math.floor(totalHours);
+    const minutes = Math.round((totalHours - hours) * 60);
+    
+    if (hours === 0) {
+      return `${minutes}m`;
+    } else if (minutes === 0) {
+      return `${hours}h`;
+    } else {
+      return `${hours}h ${minutes}m`;
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -211,20 +224,20 @@ export default function AdminTimeLogsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       <Sidebar />
       
       <div className="flex-1 flex flex-col lg:ml-0">
         <Header />
         
         <main className="flex-1 p-4 lg:p-6">
-          <div className="bg-white rounded-lg shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
             {/* Header */}
-            <div className="px-4 lg:px-6 py-4 border-b border-gray-200">
+            <div className="px-4 lg:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                 <div>
-                  <h1 className="text-lg lg:text-xl font-semibold text-gray-900">Time Logs</h1>
-                  <p className="text-sm text-gray-600">Review and manage worker time entries</p>
+                  <h1 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">Time Logs</h1>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Review and manage worker time entries</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                   <Button
@@ -250,12 +263,12 @@ export default function AdminTimeLogsPage() {
             </div>
 
             {/* Filters */}
-            <div className="px-4 lg:px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div className="px-4 lg:px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <select
                   value={filters.status}
                   onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="">All Status</option>
                   <option value="PENDING">Pending</option>
@@ -267,7 +280,7 @@ export default function AdminTimeLogsPage() {
                 <select
                   value={filters.projectId}
                   onChange={(e) => setFilters(prev => ({ ...prev, projectId: e.target.value }))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="">All Projects</option>
                   {projects.map((project) => (
@@ -281,7 +294,7 @@ export default function AdminTimeLogsPage() {
                   type="date"
                   value={filters.startDate}
                   onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Start Date"
                 />
                 
@@ -289,7 +302,7 @@ export default function AdminTimeLogsPage() {
                   type="date"
                   value={filters.endDate}
                   onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="End Date"
                 />
               </div>
@@ -297,9 +310,9 @@ export default function AdminTimeLogsPage() {
 
             {/* Bulk Actions */}
             {selectedLogs.length > 0 && (
-              <div className="px-4 lg:px-6 py-3 bg-blue-50 border-b border-blue-200 animate-in slide-in-from-top duration-200">
+              <div className="px-4 lg:px-6 py-3 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800 animate-in slide-in-from-top duration-200">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                  <span className="text-sm text-blue-700">
+                  <span className="text-sm text-blue-700 dark:text-blue-300">
                     {selectedLogs.length} item(s) selected
                   </span>
                   <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
@@ -346,20 +359,20 @@ export default function AdminTimeLogsPage() {
             {/* Mobile Card View */}
             <div className="lg:hidden">
               {timeLogs.map((log) => (
-                <div key={log.id} className="p-4 border-b border-gray-200">
+                <div key={log.id} className="p-4 border-b border-gray-200 dark:border-gray-700">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center space-x-3">
                       <input
                         type="checkbox"
                         checked={selectedLogs.includes(log.id)}
                         onChange={() => handleSelectLog(log.id)}
-                        className="rounded border-gray-300 text-[#008080] focus:ring-[#008080]"
+                        className="rounded border-gray-300 dark:border-gray-600 text-[#008080] focus:ring-[#008080] bg-white dark:bg-gray-700"
                       />
                       <div>
-                        <p className="font-medium text-gray-900 text-sm">
+                        <p className="font-medium text-gray-900 dark:text-white text-sm">
                           {log.user?.firstName} {log.user?.lastName}
                         </p>
-                        <p className="text-xs text-gray-500">{log.user?.email}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{log.user?.email}</p>
                       </div>
                     </div>
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(log.status)}`}>
@@ -372,20 +385,20 @@ export default function AdminTimeLogsPage() {
                   
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Project:</span>
-                      <span className="font-medium">{log.project?.name}</span>
+                      <span className="text-gray-500 dark:text-gray-400">Project:</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{log.project?.name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Date:</span>
-                      <span>{formatDate(log.startTime)}</span>
+                      <span className="text-gray-500 dark:text-gray-400">Date:</span>
+                      <span className="text-gray-900 dark:text-white">{formatDate(log.startTime)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Time:</span>
-                      <span>{formatTime(log.startTime)} - {log.endTime ? formatTime(log.endTime) : 'Ongoing'}</span>
+                      <span className="text-gray-500 dark:text-gray-400">Time:</span>
+                      <span className="text-gray-900 dark:text-white">{formatTime(log.startTime)} - {log.endTime ? formatTime(log.endTime) : 'Ongoing'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Duration:</span>
-                      <span className="font-medium">{formatDuration(log.totalHours || 0)}</span>
+                      <span className="text-gray-500 dark:text-gray-400">Duration:</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{formatTimeWorked(log.totalHours || 0)}</span>
                     </div>
                   </div>
 
@@ -394,21 +407,21 @@ export default function AdminTimeLogsPage() {
                       <>
                         <button
                           onClick={() => handleSingleAction(log.id, 'APPROVED')}
-                          className="text-green-600 hover:text-green-900 p-2 rounded-full hover:bg-green-100"
+                          className="text-green-600 hover:text-green-900 p-2 rounded-full hover:bg-green-100 dark:hover:bg-green-900/20"
                           title="Approve"
                         >
                           <Check className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleSingleAction(log.id, 'REJECTED')}
-                          className="text-red-600 hover:text-red-900 p-2 rounded-full hover:bg-red-100"
+                          className="text-red-600 hover:text-red-900 p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/20"
                           title="Reject"
                         >
                           <X className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => openEditRequestModal(log.id)}
-                          className="text-orange-600 hover:text-orange-900 p-2 rounded-full hover:bg-orange-100"
+                          className="text-orange-600 hover:text-orange-900 p-2 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/20"
                           title="Request Edit"
                         >
                           <Edit3 className="w-4 h-4" />
@@ -417,7 +430,7 @@ export default function AdminTimeLogsPage() {
                     )}
                     <button
                       onClick={() => handleViewDetails(log)}
-                      className="text-blue-600 hover:text-blue-900 p-2 rounded-full hover:bg-blue-100"
+                      className="text-blue-600 hover:text-blue-900 p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
                       title="View Details"
                     >
                       <Eye className="w-4 h-4" />
@@ -430,81 +443,81 @@ export default function AdminTimeLogsPage() {
             {/* Desktop Table View */}
             <div className="hidden lg:block overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-50 dark:bg-gray-800">
                   <tr>
                     <th className="px-6 py-3 text-left">
                       <input
                         type="checkbox"
                         checked={selectedLogs.length === timeLogs.length && timeLogs.length > 0}
                         onChange={handleSelectAll}
-                        className="rounded border-gray-300 text-[#008080] focus:ring-[#008080]"
+                        className="rounded border-gray-300 dark:border-gray-600 text-[#008080] focus:ring-[#008080] bg-white dark:bg-gray-700"
                       />
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Worker
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Project
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Check In
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Check Out
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Total Time
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {timeLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-gray-50 transition-colors duration-150">
+                    <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
                       <td className="px-6 py-4">
                         <input
                           type="checkbox"
                           checked={selectedLogs.includes(log.id)}
                           onChange={() => handleSelectLog(log.id)}
-                          className="rounded border-gray-300 text-[#008080] focus:ring-[#008080]"
+                          className="rounded border-gray-300 dark:border-gray-600 text-[#008080] focus:ring-[#008080] bg-white dark:bg-gray-700"
                         />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
                             {log.user?.firstName} {log.user?.lastName}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
                             {log.user?.email}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-gray-900 dark:text-white">
                           {log.project?.name}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-gray-900 dark:text-white">
                           {formatTime(log.startTime)}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
                           {formatDate(log.startTime)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-gray-900 dark:text-white">
                           {log.endTime ? formatTime(log.endTime) : '--:--'}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {formatDuration(log.totalHours || 0)}
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                          {formatTimeWorked(log.totalHours || 0)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -521,21 +534,21 @@ export default function AdminTimeLogsPage() {
                             <>
                               <button
                                 onClick={() => handleSingleAction(log.id, 'APPROVED')}
-                                className="text-green-600 hover:text-green-900 p-1 rounded-full hover:bg-green-100 transition-colors duration-150"
+                                className="text-green-600 hover:text-green-900 p-1 rounded-full hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors duration-150"
                                 title="Approve"
                               >
                                 <Check className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => handleSingleAction(log.id, 'REJECTED')}
-                                className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-100 transition-colors duration-150"
+                                className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors duration-150"
                                 title="Reject"
                               >
                                 <X className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => openEditRequestModal(log.id)}
-                                className="text-orange-600 hover:text-orange-900 p-1 rounded-full hover:bg-orange-100 transition-colors duration-150"
+                                className="text-orange-600 hover:text-orange-900 p-1 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors duration-150"
                                 title="Request Edit"
                               >
                                 <Edit3 className="w-4 h-4" />
@@ -544,7 +557,7 @@ export default function AdminTimeLogsPage() {
                           )}
                           <button
                             onClick={() => handleViewDetails(log)}
-                            className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-100 transition-colors duration-150"
+                            className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20 transition-colors duration-150"
                             title="View Details"
                           >
                             <Eye className="w-4 h-4" />
@@ -560,9 +573,9 @@ export default function AdminTimeLogsPage() {
             {/* Empty State */}
             {timeLogs.length === 0 && (
               <div className="text-center py-12">
-                <FileText className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No time logs found</h3>
-                <p className="mt-1 text-sm text-gray-500">
+                <FileText className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No time logs found</h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   No time logs match your current filters.
                 </p>
               </div>
@@ -570,9 +583,9 @@ export default function AdminTimeLogsPage() {
 
             {/* Pagination */}
             {timeLogs.length > 0 && (
-              <div className="px-4 lg:px-6 py-3 border-t border-gray-200">
+              <div className="px-4 lg:px-6 py-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                  <div className="text-sm text-gray-700 text-center sm:text-left">
+                  <div className="text-sm text-gray-700 dark:text-gray-300 text-center sm:text-left">
                     Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
                   </div>
                   <div className="flex items-center justify-center space-x-2">
@@ -584,7 +597,7 @@ export default function AdminTimeLogsPage() {
                     >
                       Previous
                     </Button>
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
                       Page {pagination.page} of {pagination.totalPages}
                     </span>
                     <Button
@@ -615,14 +628,14 @@ export default function AdminTimeLogsPage() {
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Feedback for Worker *
             </label>
             <textarea
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
               placeholder="Please explain what needs to be corrected or provide additional details..."
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               rows={4}
               required
             />
@@ -667,7 +680,7 @@ export default function AdminTimeLogsPage() {
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Feedback {bulkAction === 'EDIT_REQUESTED' ? '(Required)' : '(Optional)'}
             </label>
             <textarea
@@ -678,7 +691,7 @@ export default function AdminTimeLogsPage() {
                 bulkAction === 'REJECTED' ? 'Reason for rejection...' :
                 'What needs to be edited?'
               }
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               rows={3}
               required={bulkAction === 'EDIT_REQUESTED'}
             />

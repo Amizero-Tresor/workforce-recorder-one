@@ -69,8 +69,8 @@ export class UsersController {
   async exportUsers(
     @GetCurrentUser() currentUser: CurrentUser,
     @Query('format') format: 'csv' | 'excel' = 'csv',
-    @Query('role') role: Role | undefined,
-    @Res() res: Response,
+    @Query('role') role?: Role,
+    @Res() res?: Response,
   ) {
     return this.usersService.exportUsers(currentUser, format, role, res);
   }

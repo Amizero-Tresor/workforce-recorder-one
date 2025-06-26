@@ -83,6 +83,10 @@ export default function WorkerDashboard() {
         setCurrentTimeLog(ongoingLog);
         setIsCheckedIn(true);
         setManualEntry(prev => ({ ...prev, projectId: ongoingLog.projectId }));
+      } else {
+        setCurrentTimeLog(null);
+        setIsCheckedIn(false);
+        setManualEntry(prev => ({ ...prev, projectId: '' }));
       }
     } catch (error) {
       console.error('Error checking current status:', error);
@@ -108,6 +112,7 @@ export default function WorkerDashboard() {
       toast.success('Checked in successfully!');
       fetchDashboardData();
     } catch (error: any) {
+      console.error('Check in error:', error);
       toast.error(error.response?.data?.message || 'Failed to check in');
     } finally {
       setCheckInLoading(false);
@@ -122,7 +127,8 @@ export default function WorkerDashboard() {
 
     setCheckInLoading(true);
     try {
-      // Use PATCH instead of PUT to update the time log
+      console.log('Checking out time log:', currentTimeLog.id);
+      
       await api.patch(`/time-logs/${currentTimeLog.id}`, {
         endTime: new Date().toISOString(),
         description: manualEntry.description || currentTimeLog.description || 'Checked out',
@@ -192,6 +198,19 @@ export default function WorkerDashboard() {
     return { hours, minutes };
   };
 
+  const formatTimeWorked = (totalHours: number) => {
+    const hours = Math.floor(totalHours);
+    const minutes = Math.round((totalHours - hours) * 60);
+    
+    if (hours === 0) {
+      return `${minutes}m`;
+    } else if (minutes === 0) {
+      return `${hours}h`;
+    } else {
+      return `${hours}h ${minutes}m`;
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -203,7 +222,7 @@ export default function WorkerDashboard() {
   const workedTime = getWorkedTimeToday();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       <Sidebar />
       
       <div className="flex-1 flex flex-col lg:ml-0">
@@ -212,10 +231,10 @@ export default function WorkerDashboard() {
         <main className="flex-1 p-4 lg:p-6 ml-0 lg:ml-0">
           {/* Welcome Section */}
           <div className="mb-6 lg:mb-8">
-            <h1 className="text-xl lg:text-2xl font-bold text-gray-900">
+            <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
               Good {currentTime.getHours() < 12 ? 'Morning' : currentTime.getHours() < 18 ? 'Afternoon' : 'Evening'}, {user?.firstName}! 👋
             </h1>
-            <p className="text-sm lg:text-base text-gray-600">Ready to track your productive day?</p>
+            <p className="text-sm lg:text-base text-gray-600 dark:text-gray-300">Ready to track your productive day?</p>
           </div>
 
           {/* Current Status Card */}
@@ -243,54 +262,54 @@ export default function WorkerDashboard() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
-            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xl lg:text-2xl font-bold text-gray-900">{formatDuration(stats.thisWeekHours || 0)}</p>
-                  <p className="text-sm text-gray-600">This Week</p>
-                  <p className="text-xs text-blue-600">+2h 30m from last week</p>
+                  <p className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">{formatTimeWorked(stats.thisWeekHours || 0)}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">This Week</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400">+2h 30m from last week</p>
                 </div>
-                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <Clock className="w-5 h-5 lg:w-6 lg:h-6 text-blue-600" />
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center">
+                  <Clock className="w-5 h-5 lg:w-6 lg:h-6 text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
             </div>
             
-            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xl lg:text-2xl font-bold text-gray-900">{formatDuration(stats.totalHoursWorked || 0)}</p>
-                  <p className="text-sm text-gray-600">This Month</p>
-                  <p className="text-xs text-green-600">On track</p>
+                  <p className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">{formatTimeWorked(stats.totalHoursWorked || 0)}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">This Month</p>
+                  <p className="text-xs text-green-600 dark:text-green-400">On track</p>
                 </div>
-                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                  <Calendar className="w-5 h-5 lg:w-6 lg:h-6 text-green-600" />
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 dark:bg-green-900 rounded-xl flex items-center justify-center">
+                  <Calendar className="w-5 h-5 lg:w-6 lg:h-6 text-green-600 dark:text-green-400" />
                 </div>
               </div>
             </div>
             
-            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xl lg:text-2xl font-bold text-gray-900">{stats.logsApproved || 0}</p>
-                  <p className="text-sm text-gray-600">Approved</p>
-                  <p className="text-xs text-green-600">Great work!</p>
+                  <p className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">{stats.logsApproved || 0}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Approved</p>
+                  <p className="text-xs text-green-600 dark:text-green-400">Great work!</p>
                 </div>
-                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                  <CheckCircle className="w-5 h-5 lg:w-6 lg:h-6 text-green-600" />
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 dark:bg-green-900 rounded-xl flex items-center justify-center">
+                  <CheckCircle className="w-5 h-5 lg:w-6 lg:h-6 text-green-600 dark:text-green-400" />
                 </div>
               </div>
             </div>
             
-            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xl lg:text-2xl font-bold text-gray-900">{stats.logsPending || 0}</p>
-                  <p className="text-sm text-gray-600">Pending</p>
-                  <p className="text-xs text-yellow-600">Under review</p>
+                  <p className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">{stats.logsPending || 0}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Pending</p>
+                  <p className="text-xs text-yellow-600 dark:text-yellow-400">Under review</p>
                 </div>
-                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                  <AlertCircle className="w-5 h-5 lg:w-6 lg:h-6 text-yellow-600" />
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-yellow-100 dark:bg-yellow-900 rounded-xl flex items-center justify-center">
+                  <AlertCircle className="w-5 h-5 lg:w-6 lg:h-6 text-yellow-600 dark:text-yellow-400" />
                 </div>
               </div>
             </div>
@@ -298,24 +317,24 @@ export default function WorkerDashboard() {
 
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
             {/* Time Tracking */}
-            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
               <div className="flex items-center space-x-2 mb-4 lg:mb-6">
                 <div className="w-8 h-8 bg-[#008080]/10 rounded-lg flex items-center justify-center">
                   <Timer className="w-5 h-5 text-[#008080]" />
                 </div>
-                <h2 className="text-lg font-semibold">Quick Time Tracking</h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Quick Time Tracking</h2>
               </div>
 
               <div className="space-y-4">
                 {/* Project Selection */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Select Project *
                   </label>
                   <select
                     value={manualEntry.projectId}
                     onChange={(e) => setManualEntry(prev => ({ ...prev, projectId: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     disabled={isCheckedIn}
                   >
                     <option value="">Choose a project</option>
@@ -353,57 +372,57 @@ export default function WorkerDashboard() {
 
                 {/* Activity Description */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Activity Description
                   </label>
                   <textarea
                     value={manualEntry.description}
                     onChange={(e) => setManualEntry(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="What are you working on today?"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     rows={3}
                   />
                 </div>
               </div>
 
               {/* Today's Summary */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
                 <div className="flex items-center space-x-2 mb-4">
                   <CalendarDays className="w-5 h-5 text-[#008080]" />
-                  <h3 className="font-semibold">Today's Summary</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Today's Summary</h3>
                 </div>
                 
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span>Check In:</span>
-                    <span className="font-medium">
+                    <span className="text-gray-600 dark:text-gray-300">Check In:</span>
+                    <span className="font-medium text-gray-900 dark:text-white">
                       {currentTimeLog?.startTime ? formatTime(currentTimeLog.startTime) : '--:--'}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Current Time:</span>
-                    <span className="font-medium">{formatTime(currentTime.toISOString())}</span>
+                    <span className="text-gray-600 dark:text-gray-300">Current Time:</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{formatTime(currentTime.toISOString())}</span>
                   </div>
                   <div className="flex justify-between font-semibold">
-                    <span>Time Worked:</span>
-                    <span>{workedTime.hours}h {workedTime.minutes}m</span>
+                    <span className="text-gray-600 dark:text-gray-300">Time Worked:</span>
+                    <span className="text-gray-900 dark:text-white">{workedTime.hours}h {workedTime.minutes}m</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Manual Time Entry */}
-            <div className="bg-white rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 lg:p-6 shadow-sm border border-gray-100 dark:border-gray-700">
               <div className="flex items-center space-x-2 mb-4 lg:mb-6">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-orange-600" />
+                <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                 </div>
-                <h2 className="text-lg font-semibold">Manual Time Entry</h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Manual Time Entry</h2>
               </div>
 
               <form onSubmit={handleManualSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Date *
                   </label>
                   <input
@@ -411,47 +430,47 @@ export default function WorkerDashboard() {
                     value={manualEntry.date}
                     onChange={(e) => setManualEntry(prev => ({ ...prev, date: e.target.value }))}
                     max={new Date().toISOString().split('T')[0]}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     required
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Start Time *
                     </label>
                     <input
                       type="time"
                       value={manualEntry.startTime}
                       onChange={(e) => setManualEntry(prev => ({ ...prev, startTime: e.target.value }))}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       required
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       End Time *
                     </label>
                     <input
                       type="time"
                       value={manualEntry.endTime}
                       onChange={(e) => setManualEntry(prev => ({ ...prev, endTime: e.target.value }))}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       required
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Project *
                   </label>
                   <select
                     value={manualEntry.projectId}
                     onChange={(e) => setManualEntry(prev => ({ ...prev, projectId: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     required
                   >
                     <option value="">Choose a project</option>
@@ -464,14 +483,14 @@ export default function WorkerDashboard() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Activity Description
                   </label>
                   <textarea
                     value={manualEntry.description}
                     onChange={(e) => setManualEntry(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="Describe what you worked on..."
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     rows={3}
                   />
                 </div>

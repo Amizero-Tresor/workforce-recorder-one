@@ -322,6 +322,18 @@ export class TimeLogsService {
   }
 
   async create(currentUser: any, createTimeLogDto: CreateTimeLogDto) {
+    // Check if user has any ongoing time logs (no end time)
+    const ongoingTimeLog = await this.db.timeLog.findFirst({
+      where: {
+        userId: currentUser.id,
+        endTime: null,
+      },
+    });
+
+    if (ongoingTimeLog) {
+      throw new BadRequestException('You already have an ongoing time log. Please check out first before starting a new session.');
+    }
+
     // Verify user has access to the project
     const workerProject = await this.db.workerProject.findFirst({
       where: {
@@ -376,15 +388,21 @@ export class TimeLogsService {
   async update(currentUser: any, id: string, updateTimeLogDto: UpdateTimeLogDto) {
     const timeLog = await this.findById(id);
 
-    // Check permissions - allow workers to update their own ongoing time logs for check-out
+    // Check permissions
     if (currentUser.role === Role.WORKER) {
       if (timeLog.userId !== currentUser.id) {
         throw new ForbiddenException('You can only edit your own time logs');
       }
       
-      // Allow updating ongoing time logs (for check-out) or rejected/edit-requested logs
-      if (timeLog.endTime && timeLog.status !== LogStatus.REJECTED && timeLog.status !== LogStatus.EDIT_REQUESTED) {
-        throw new ForbiddenException('You can only edit rejected or edit-requested time logs');
+      // Allow updating if:
+      // 1. It's an ongoing time log (no endTime) - for check-out
+      // 2. It's a rejected or edit-requested log - for editing
+      const canEdit = !timeLog.endTime || 
+                     timeLog.status === LogStatus.REJECTED || 
+                     timeLog.status === LogStatus.EDIT_REQUESTED;
+      
+      if (!canEdit) {
+        throw new ForbiddenException('You can only edit ongoing time logs or rejected/edit-requested time logs');
       }
     }
 
