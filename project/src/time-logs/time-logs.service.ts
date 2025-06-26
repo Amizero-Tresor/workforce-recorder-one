@@ -376,13 +376,14 @@ export class TimeLogsService {
   async update(currentUser: any, id: string, updateTimeLogDto: UpdateTimeLogDto) {
     const timeLog = await this.findById(id);
 
-    // Check permissions
+    // Check permissions - allow workers to update their own ongoing time logs for check-out
     if (currentUser.role === Role.WORKER) {
       if (timeLog.userId !== currentUser.id) {
         throw new ForbiddenException('You can only edit your own time logs');
       }
       
-      if (timeLog.status !== LogStatus.REJECTED && timeLog.status !== LogStatus.EDIT_REQUESTED) {
+      // Allow updating ongoing time logs (for check-out) or rejected/edit-requested logs
+      if (timeLog.endTime && timeLog.status !== LogStatus.REJECTED && timeLog.status !== LogStatus.EDIT_REQUESTED) {
         throw new ForbiddenException('You can only edit rejected or edit-requested time logs');
       }
     }
@@ -398,6 +399,22 @@ export class TimeLogsService {
       }
       
       totalHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+    } else if (timeLog.startTime && updateTimeLogDto.endTime) {
+      // Calculate hours when only end time is being updated (check-out scenario)
+      const start = new Date(timeLog.startTime);
+      const end = new Date(updateTimeLogDto.endTime);
+      
+      if (end <= start) {
+        throw new BadRequestException('End time must be after start time');
+      }
+      
+      totalHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+    }
+
+    // Determine new status - only reset to pending if it was rejected or edit-requested
+    let newStatus = timeLog.status;
+    if (timeLog.status === LogStatus.REJECTED || timeLog.status === LogStatus.EDIT_REQUESTED) {
+      newStatus = LogStatus.PENDING;
     }
 
     const updatedTimeLog = await this.db.timeLog.update({
@@ -405,7 +422,7 @@ export class TimeLogsService {
       data: {
         ...updateTimeLogDto,
         totalHours,
-        status: LogStatus.PENDING, // Reset status to pending when edited
+        status: newStatus,
       },
       include: {
         project: true,
@@ -421,7 +438,7 @@ export class TimeLogsService {
       metadata: {
         changes: updateTimeLogDto,
         oldStatus: timeLog.status,
-        newStatus: LogStatus.PENDING,
+        newStatus: newStatus,
       },
     });
 

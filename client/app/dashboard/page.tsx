@@ -115,13 +115,17 @@ export default function WorkerDashboard() {
   };
 
   const handleCheckOut = async () => {
-    if (!currentTimeLog) return;
+    if (!currentTimeLog) {
+      toast.error('No active time log found');
+      return;
+    }
 
     setCheckInLoading(true);
     try {
-      await api.put(`/time-logs/${currentTimeLog.id}`, {
+      // Use PATCH instead of PUT to update the time log
+      await api.patch(`/time-logs/${currentTimeLog.id}`, {
         endTime: new Date().toISOString(),
-        description: manualEntry.description || 'Checked out',
+        description: manualEntry.description || currentTimeLog.description || 'Checked out',
       });
       
       setCurrentTimeLog(null);
@@ -130,6 +134,7 @@ export default function WorkerDashboard() {
       toast.success('Checked out successfully!');
       fetchDashboardData();
     } catch (error: any) {
+      console.error('Check out error:', error);
       toast.error(error.response?.data?.message || 'Failed to check out');
     } finally {
       setCheckInLoading(false);
@@ -214,7 +219,7 @@ export default function WorkerDashboard() {
           </div>
 
           {/* Current Status Card */}
-          {isCheckedIn && (
+          {isCheckedIn && currentTimeLog && (
             <div className="mb-6 lg:mb-8 bg-gradient-to-r from-[#008080] to-[#006666] rounded-xl p-4 lg:p-6 text-white">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                 <div>
