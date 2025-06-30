@@ -104,11 +104,31 @@ export default function AdminProjectsPage() {
 
   const fetchAvailableWorkers = async () => {
     try {
-      const response = await api.get('/users?role=WORKER&limit=100');
-      setAvailableWorkers(response.data.data);
+      setWorkersLoading(true);
+      // Try different approaches to fetch workers
+      let response;
+      
+      try {
+        // First try with role parameter
+        response = await api.get('/users?role=WORKER&limit=100');
+      } catch (error) {
+        console.log('Role parameter failed, trying without role filter');
+        // If that fails, try without role parameter and filter client-side
+        response = await api.get('/users?limit=100');
+      }
+      
+      const allUsers = response.data.data || [];
+      
+      // Filter for workers only (in case backend doesn't support role filtering)
+      const workers = allUsers.filter((worker: User) => worker.role === 'WORKER');
+      
+      setAvailableWorkers(workers);
     } catch (error) {
       console.error('Error fetching available workers:', error);
       toast.error('Failed to fetch available workers');
+      setAvailableWorkers([]); // Set empty array as fallback
+    } finally {
+      setWorkersLoading(false);
     }
   };
 
@@ -126,13 +146,22 @@ export default function AdminProjectsPage() {
   const handleAssignStaff = async (project: Project) => {
     setSelectedProject(project);
     setShowAssignStaffModal(true);
-    await fetchAvailableWorkers();
-    await fetchProjectWorkers(project.id);
     
-    // Pre-select currently assigned workers
-    const response = await api.get(`/projects/${project.id}`);
-    const currentWorkerIds = response.data.workerProjects?.map((wp: any) => wp.worker.id) || [];
-    setSelectedWorkerIds(currentWorkerIds);
+    // Fetch available workers and current project workers in parallel
+    await Promise.all([
+      fetchAvailableWorkers(),
+      fetchProjectWorkers(project.id)
+    ]);
+    
+    // Get current worker IDs after fetching project workers
+    try {
+      const response = await api.get(`/projects/${project.id}`);
+      const currentWorkerIds = response.data.workerProjects?.map((wp: any) => wp.worker.id) || [];
+      setSelectedWorkerIds(currentWorkerIds);
+    } catch (error) {
+      console.error('Error fetching current assignments:', error);
+      setSelectedWorkerIds([]);
+    }
   };
 
   const handleEditProject = (project: Project) => {
@@ -663,50 +692,67 @@ export default function AdminProjectsPage() {
             Select staff members to assign to this project. Currently assigned staff are pre-selected.
           </p>
 
-          <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg">
-            {availableWorkers.map((worker) => (
-              <div
-                key={worker.id}
-                className="flex items-center space-x-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedWorkerIds.includes(worker.id)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedWorkerIds([...selectedWorkerIds, worker.id]);
-                    } else {
-                      setSelectedWorkerIds(selectedWorkerIds.filter(id => id !== worker.id));
-                    }
-                  }}
-                  className="rounded border-gray-300 dark:border-gray-600 text-[#008080] focus:ring-[#008080]"
-                />
-                <div className="w-8 h-8 bg-gradient-to-br from-[#008080] to-[#006666] rounded-full flex items-center justify-center">
-                  <span className="text-white font-medium text-xs">
-                    {worker.firstName[0]}
-                    {worker.lastName[0]}
+          {workersLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#008080]"></div>
+              <p className="ml-3 text-sm text-gray-600 dark:text-gray-300">Loading staff...</p>
+            </div>
+          ) : availableWorkers.length === 0 ? (
+            <div className="text-center py-8">
+              <Users className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                No staff available
+              </h3>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                No staff members found to assign to this project.
+              </p>
+            </div>
+          ) : (
+            <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg">
+              {availableWorkers.map((worker) => (
+                <div
+                  key={worker.id}
+                  className="flex items-center space-x-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedWorkerIds.includes(worker.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedWorkerIds([...selectedWorkerIds, worker.id]);
+                      } else {
+                        setSelectedWorkerIds(selectedWorkerIds.filter(id => id !== worker.id));
+                      }
+                    }}
+                    className="rounded border-gray-300 dark:border-gray-600 text-[#008080] focus:ring-[#008080]"
+                  />
+                  <div className="w-8 h-8 bg-gradient-to-br from-[#008080] to-[#006666] rounded-full flex items-center justify-center">
+                    <span className="text-white font-medium text-xs">
+                      {worker.firstName[0]}
+                      {worker.lastName[0]}
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-gray-900 dark:text-white">
+                      {worker.firstName} {worker.lastName}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {worker.email}
+                    </div>
+                  </div>
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      worker.status === 'ACTIVE'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                    }`}
+                  >
+                    {worker.status === 'ACTIVE' ? 'Active' : 'Inactive'}
                   </span>
                 </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-gray-900 dark:text-white">
-                    {worker.firstName} {worker.lastName}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    {worker.email}
-                  </div>
-                </div>
-                <span
-                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    worker.status === 'ACTIVE'
-                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                  }`}
-                >
-                  {worker.status === 'ACTIVE' ? 'Active' : 'Inactive'}
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           <div className="flex justify-end space-x-3">
             <Button
@@ -722,6 +768,7 @@ export default function AdminProjectsPage() {
             <Button
               onClick={handleSaveAssignments}
               loading={assignLoading}
+              disabled={workersLoading || availableWorkers.length === 0}
               className="bg-[#008080] hover:bg-[#006666]"
             >
               Save Assignments
