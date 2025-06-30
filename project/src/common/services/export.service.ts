@@ -103,7 +103,6 @@ export class ExportService {
 
   formatTimeLogForExport(timeLog: any) {
     return {
-      'Log ID': timeLog.id,
       'Staff Name': `${timeLog.user.firstName} ${timeLog.user.lastName}`,
       'Staff Email': timeLog.user.email,
       Project: timeLog.project.name,
@@ -119,11 +118,6 @@ export class ExportService {
       Reviewer: timeLog.reviewer
         ? `${timeLog.reviewer.firstName} ${timeLog.reviewer.lastName}`
         : '',
-      'Reviewed At': timeLog.reviewedAt
-        ? new Date(timeLog.reviewedAt).toLocaleString()
-        : '',
-      Feedback: timeLog.feedback || '',
-      'Created At': new Date(timeLog.createdAt).toLocaleString(),
     };
   }
 

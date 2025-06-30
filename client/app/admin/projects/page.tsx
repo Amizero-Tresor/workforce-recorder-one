@@ -34,9 +34,20 @@ export default function AdminProjectsPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [showWorkersModal, setShowWorkersModal] = useState(false);
   const [showProjectDetailsModal, setShowProjectDetailsModal] = useState(false);
+  const [showAssignStaffModal, setShowAssignStaffModal] = useState(false);
+  const [showEditProjectModal, setShowEditProjectModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [projectWorkers, setProjectWorkers] = useState<User[]>([]);
+  const [availableWorkers, setAvailableWorkers] = useState<User[]>([]);
+  const [selectedWorkerIds, setSelectedWorkerIds] = useState<string[]>([]);
   const [workersLoading, setWorkersLoading] = useState(false);
+  const [assignLoading, setAssignLoading] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    description: '',
+    isActive: true,
+  });
+  const [editLoading, setEditLoading] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -91,6 +102,16 @@ export default function AdminProjectsPage() {
     }
   };
 
+  const fetchAvailableWorkers = async () => {
+    try {
+      const response = await api.get('/users?role=WORKER&limit=100');
+      setAvailableWorkers(response.data.data);
+    } catch (error) {
+      console.error('Error fetching available workers:', error);
+      toast.error('Failed to fetch available workers');
+    }
+  };
+
   const handleViewWorkers = async (project: Project) => {
     setSelectedProject(project);
     setShowWorkersModal(true);
@@ -100,6 +121,67 @@ export default function AdminProjectsPage() {
   const handleViewProjectDetails = (project: Project) => {
     setSelectedProject(project);
     setShowProjectDetailsModal(true);
+  };
+
+  const handleAssignStaff = async (project: Project) => {
+    setSelectedProject(project);
+    setShowAssignStaffModal(true);
+    await fetchAvailableWorkers();
+    await fetchProjectWorkers(project.id);
+    
+    // Pre-select currently assigned workers
+    const response = await api.get(`/projects/${project.id}`);
+    const currentWorkerIds = response.data.workerProjects?.map((wp: any) => wp.worker.id) || [];
+    setSelectedWorkerIds(currentWorkerIds);
+  };
+
+  const handleEditProject = (project: Project) => {
+    setSelectedProject(project);
+    setEditFormData({
+      name: project.name,
+      description: project.description || '',
+      isActive: project.isActive,
+    });
+    setShowEditProjectModal(true);
+  };
+
+  const handleSaveAssignments = async () => {
+    if (!selectedProject) return;
+
+    try {
+      setAssignLoading(true);
+      await api.post(`/projects/${selectedProject.id}/assign-workers`, {
+        workerIds: selectedWorkerIds,
+      });
+      
+      toast.success('Staff assigned successfully!');
+      setShowAssignStaffModal(false);
+      setSelectedProject(null);
+      setSelectedWorkerIds([]);
+      fetchProjects(); // Refresh the projects list
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to assign staff');
+    } finally {
+      setAssignLoading(false);
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    if (!selectedProject) return;
+
+    try {
+      setEditLoading(true);
+      await api.put(`/projects/${selectedProject.id}`, editFormData);
+      
+      toast.success('Project updated successfully!');
+      setShowEditProjectModal(false);
+      setSelectedProject(null);
+      fetchProjects(); // Refresh the projects list
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to update project');
+    } finally {
+      setEditLoading(false);
+    }
   };
 
   const handleExport = async (format: 'csv' | 'excel') => {
@@ -290,12 +372,14 @@ export default function AdminProjectsPage() {
                       <Eye className="w-4 h-4" />
                     </button>
                     <button
+                      onClick={() => handleAssignStaff(project)}
                       className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 p-2 rounded-full hover:bg-green-100 dark:hover:bg-green-900/20"
                       title="Assign Staff"
                     >
                       <UserPlus className="w-4 h-4" />
                     </button>
                     <button
+                      onClick={() => handleEditProject(project)}
                       className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                       title="Edit Project"
                     >
@@ -390,12 +474,14 @@ export default function AdminProjectsPage() {
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
+                            onClick={() => handleAssignStaff(project)}
                             className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 p-1 rounded-full hover:bg-green-100 dark:hover:bg-green-900/20"
                             title="Assign Staff"
                           >
                             <UserPlus className="w-4 h-4" />
                           </button>
                           <button
+                            onClick={() => handleEditProject(project)}
                             className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                             title="Edit Project"
                           >
@@ -494,6 +580,10 @@ export default function AdminProjectsPage() {
                 'No project description available'}
             </p>
             <Button
+              onClick={() => {
+                setShowWorkersModal(false);
+                handleAssignStaff(selectedProject!);
+              }}
               size="sm"
               className="flex items-center space-x-2 bg-[#008080] hover:bg-[#006666]"
             >
@@ -554,6 +644,161 @@ export default function AdminProjectsPage() {
               ))}
             </div>
           )}
+        </div>
+      </Modal>
+
+      {/* Assign Staff Modal */}
+      <Modal
+        isOpen={showAssignStaffModal}
+        onClose={() => {
+          setShowAssignStaffModal(false);
+          setSelectedProject(null);
+          setSelectedWorkerIds([]);
+        }}
+        title={`Assign Staff - ${selectedProject?.name}`}
+        size="lg"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Select staff members to assign to this project. Currently assigned staff are pre-selected.
+          </p>
+
+          <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg">
+            {availableWorkers.map((worker) => (
+              <div
+                key={worker.id}
+                className="flex items-center space-x-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedWorkerIds.includes(worker.id)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedWorkerIds([...selectedWorkerIds, worker.id]);
+                    } else {
+                      setSelectedWorkerIds(selectedWorkerIds.filter(id => id !== worker.id));
+                    }
+                  }}
+                  className="rounded border-gray-300 dark:border-gray-600 text-[#008080] focus:ring-[#008080]"
+                />
+                <div className="w-8 h-8 bg-gradient-to-br from-[#008080] to-[#006666] rounded-full flex items-center justify-center">
+                  <span className="text-white font-medium text-xs">
+                    {worker.firstName[0]}
+                    {worker.lastName[0]}
+                  </span>
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">
+                    {worker.firstName} {worker.lastName}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {worker.email}
+                  </div>
+                </div>
+                <span
+                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    worker.status === 'ACTIVE'
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                  }`}
+                >
+                  {worker.status === 'ACTIVE' ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-end space-x-3">
+            <Button
+              onClick={() => {
+                setShowAssignStaffModal(false);
+                setSelectedProject(null);
+                setSelectedWorkerIds([]);
+              }}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveAssignments}
+              loading={assignLoading}
+              className="bg-[#008080] hover:bg-[#006666]"
+            >
+              Save Assignments
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit Project Modal */}
+      <Modal
+        isOpen={showEditProjectModal}
+        onClose={() => {
+          setShowEditProjectModal(false);
+          setSelectedProject(null);
+        }}
+        title={`Edit Project - ${selectedProject?.name}`}
+        size="lg"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Project Name *
+            </label>
+            <input
+              type="text"
+              value={editFormData.name}
+              onChange={(e) => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
+              placeholder="Enter project name"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Description
+            </label>
+            <textarea
+              value={editFormData.description}
+              onChange={(e) => setEditFormData(prev => ({ ...prev, description: e.target.value }))}
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
+              rows={4}
+              placeholder="Project description..."
+            />
+          </div>
+
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="editIsActive"
+              checked={editFormData.isActive}
+              onChange={(e) => setEditFormData(prev => ({ ...prev, isActive: e.target.checked }))}
+              className="rounded border-gray-300 dark:border-gray-600 text-[#008080] focus:ring-[#008080]"
+            />
+            <label htmlFor="editIsActive" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+              Project is active
+            </label>
+          </div>
+
+          <div className="flex justify-end space-x-3">
+            <Button
+              onClick={() => {
+                setShowEditProjectModal(false);
+                setSelectedProject(null);
+              }}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveEdit}
+              loading={editLoading}
+              className="bg-[#008080] hover:bg-[#006666]"
+            >
+              Save Changes
+            </Button>
+          </div>
         </div>
       </Modal>
 
