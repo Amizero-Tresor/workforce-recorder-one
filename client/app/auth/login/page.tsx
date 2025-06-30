@@ -16,7 +16,7 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       await login(email, password);
     } catch (error) {
@@ -33,26 +33,75 @@ export default function LoginPage() {
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse delay-500"></div>
-        
+
         {/* Floating Geometric Shapes */}
         <div className="absolute top-20 left-20 w-4 h-4 bg-white/20 rounded-full animate-bounce delay-300"></div>
         <div className="absolute top-40 right-32 w-6 h-6 bg-white/15 rotate-45 animate-bounce delay-700"></div>
         <div className="absolute bottom-32 left-40 w-3 h-3 bg-white/25 rounded-full animate-bounce delay-1000"></div>
         <div className="absolute bottom-20 right-20 w-5 h-5 bg-white/20 rotate-45 animate-bounce delay-500"></div>
-        
+
         {/* Network Lines */}
-        <svg className="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 400 400">
+        <svg
+          className="absolute inset-0 w-full h-full opacity-20"
+          viewBox="0 0 400 400"
+        >
           <defs>
-            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient
+              id="lineGradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
               <stop offset="0%" stopColor="white" stopOpacity="0.3" />
               <stop offset="100%" stopColor="white" stopOpacity="0.1" />
             </linearGradient>
           </defs>
-          <line x1="50" y1="100" x2="150" y2="80" stroke="url(#lineGradient)" strokeWidth="2" className="animate-pulse" />
-          <line x1="150" y1="80" x2="250" y2="120" stroke="url(#lineGradient)" strokeWidth="2" className="animate-pulse delay-300" />
-          <line x1="100" y1="200" x2="200" y2="180" stroke="url(#lineGradient)" strokeWidth="2" className="animate-pulse delay-600" />
-          <line x1="200" y1="180" x2="300" y2="220" stroke="url(#lineGradient)" strokeWidth="2" className="animate-pulse delay-900" />
-          <line x1="80" y1="300" x2="180" y2="280" stroke="url(#lineGradient)" strokeWidth="2" className="animate-pulse delay-1200" />
+          <line
+            x1="50"
+            y1="100"
+            x2="150"
+            y2="80"
+            stroke="url(#lineGradient)"
+            strokeWidth="2"
+            className="animate-pulse"
+          />
+          <line
+            x1="150"
+            y1="80"
+            x2="250"
+            y2="120"
+            stroke="url(#lineGradient)"
+            strokeWidth="2"
+            className="animate-pulse delay-300"
+          />
+          <line
+            x1="100"
+            y1="200"
+            x2="200"
+            y2="180"
+            stroke="url(#lineGradient)"
+            strokeWidth="2"
+            className="animate-pulse delay-600"
+          />
+          <line
+            x1="200"
+            y1="180"
+            x2="300"
+            y2="220"
+            stroke="url(#lineGradient)"
+            strokeWidth="2"
+            className="animate-pulse delay-900"
+          />
+          <line
+            x1="80"
+            y1="300"
+            x2="180"
+            y2="280"
+            stroke="url(#lineGradient)"
+            strokeWidth="2"
+            className="animate-pulse delay-1200"
+          />
         </svg>
       </div>
 
@@ -73,8 +122,12 @@ export default function LoginPage() {
 
         {/* Welcome Section */}
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h2>
-          <p className="text-gray-600 dark:text-gray-300">Sign in to your workforce management account</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Welcome Back
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300">
+            Sign in to your workforce management account
+          </p>
         </div>
 
         {/* Login Form */}
@@ -98,7 +151,7 @@ export default function LoginPage() {
               <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
             </div>
             <input
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -126,11 +179,17 @@ export default function LoginPage() {
                 type="checkbox"
                 className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+              >
                 Remember me
               </label>
             </div>
-            <a href="#" className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
+            <a
+              href="#"
+              className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
+            >
               Forgot password?
             </a>
           </div>
@@ -146,12 +205,22 @@ export default function LoginPage() {
 
         {/* Demo Credentials */}
         <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
-          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Demo Credentials:</h3>
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            Demo Credentials:
+          </h3>
           <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
-            <p><strong>Corporate Admin:</strong> corporate.admin@techcorp.com</p>
-            <p><strong>Company Admin:</strong> admin1@techcorp-solutions.com</p>
-            <p><strong>Worker:</strong> worker1@techcorp-solutions.com</p>
-            <p><strong>Password:</strong> TempPass123!</p>
+            <p>
+              <strong>Corporate Admin:</strong> corporate.admin@techcorp.com
+            </p>
+            <p>
+              <strong>Company Admin:</strong> admin1@techcorp-solutions.com
+            </p>
+            <p>
+              <strong>Staff:</strong> staff1@techcorp-solutions.com
+            </p>
+            <p>
+              <strong>Password:</strong> TempPass123!
+            </p>
           </div>
         </div>
 

@@ -30,7 +30,7 @@ export default function CreateWorkerPage() {
       fetchCompanies();
     } else if (user?.role === 'COMPANY_ADMIN') {
       // For company admins, set their company ID automatically
-      setFormData(prev => ({ ...prev, companyId: user.companyId }));
+      setFormData((prev) => ({ ...prev, companyId: user.companyId }));
     }
   }, [user]);
 
@@ -50,18 +50,19 @@ export default function CreateWorkerPage() {
 
     try {
       // For company admins, the backend will automatically use their company ID
-      const submitData = user?.role === 'COMPANY_ADMIN' 
-        ? { 
-            email: formData.email,
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            phoneNumber: formData.phoneNumber,
-            role: formData.role
-          }
-        : formData;
+      const submitData =
+        user?.role === 'COMPANY_ADMIN'
+          ? {
+              email: formData.email,
+              firstName: formData.firstName,
+              lastName: formData.lastName,
+              phoneNumber: formData.phoneNumber,
+              role: formData.role,
+            }
+          : formData;
 
       await api.post('/users', submitData);
-      toast.success('Worker created successfully! Invitation email sent.');
+      toast.success('Staff created successfully! Invitation email sent.');
       router.push('/admin/workers');
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to create worker');
@@ -73,10 +74,10 @@ export default function CreateWorkerPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar />
-      
+
       <div className="flex-1 flex flex-col">
         <Header />
-        
+
         <main className="flex-1 p-6">
           <div className="max-w-2xl mx-auto">
             <div className="mb-6">
@@ -86,11 +87,15 @@ export default function CreateWorkerPage() {
                 className="mb-4 flex items-center space-x-2"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span>Back to Workers</span>
+                <span>Back to Staff</span>
               </Button>
-              
-              <h1 className="text-2xl font-semibold text-gray-900">Add New Worker</h1>
-              <p className="text-gray-600">Create a new worker account and send invitation email</p>
+
+              <h1 className="text-2xl font-semibold text-gray-900">
+                Add New Staff
+              </h1>
+              <p className="text-gray-600">
+                Create a new worker account and send invitation email
+              </p>
             </div>
 
             <div className="bg-white rounded-lg shadow-sm p-6">
@@ -104,12 +109,17 @@ export default function CreateWorkerPage() {
                       type="text"
                       placeholder="First Name"
                       value={formData.firstName}
-                      onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          firstName: e.target.value,
+                        }))
+                      }
                       className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                       required
                     />
                   </div>
-                  
+
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <User className="h-5 w-5 text-gray-400" />
@@ -118,7 +128,12 @@ export default function CreateWorkerPage() {
                       type="text"
                       placeholder="Last Name"
                       value={formData.lastName}
-                      onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          lastName: e.target.value,
+                        }))
+                      }
                       className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                       required
                     />
@@ -133,7 +148,12 @@ export default function CreateWorkerPage() {
                     type="email"
                     placeholder="Email Address"
                     value={formData.email}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     required
                   />
@@ -147,7 +167,12 @@ export default function CreateWorkerPage() {
                     type="tel"
                     placeholder="Phone Number (Optional)"
                     value={formData.phoneNumber}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        phoneNumber: e.target.value,
+                      }))
+                    }
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
@@ -158,10 +183,12 @@ export default function CreateWorkerPage() {
                   </label>
                   <select
                     value={formData.role}
-                    onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, role: e.target.value }))
+                    }
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
-                    <option value="WORKER">Worker</option>
+                    <option value="WORKER">Staff</option>
                     {user?.role === 'CORPORATE_ADMIN' && (
                       <option value="COMPANY_ADMIN">Company Admin</option>
                     )}
@@ -179,7 +206,12 @@ export default function CreateWorkerPage() {
                       </div>
                       <select
                         value={formData.companyId}
-                        onChange={(e) => setFormData(prev => ({ ...prev, companyId: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            companyId: e.target.value,
+                          }))
+                        }
                         className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                         required
                       >
@@ -211,10 +243,13 @@ export default function CreateWorkerPage() {
                 )}
 
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-yellow-800 mb-2">📧 Invitation Email</h4>
+                  <h4 className="text-sm font-medium text-yellow-800 mb-2">
+                    📧 Invitation Email
+                  </h4>
                   <p className="text-sm text-yellow-700">
-                    An invitation email with temporary login credentials will be sent to the user's email address.
-                    They will be required to change their password on first login.
+                    An invitation email with temporary login credentials will be
+                    sent to the user's email address. They will be required to
+                    change their password on first login.
                   </p>
                 </div>
 
@@ -229,9 +264,11 @@ export default function CreateWorkerPage() {
                   <Button
                     type="submit"
                     loading={loading}
-                    disabled={user?.role === 'CORPORATE_ADMIN' && !formData.companyId}
+                    disabled={
+                      user?.role === 'CORPORATE_ADMIN' && !formData.companyId
+                    }
                   >
-                    {loading ? 'Creating...' : 'Create Worker & Send Invitation'}
+                    {loading ? 'Creating...' : 'Create Staff & Send Invitation'}
                   </Button>
                 </div>
               </form>

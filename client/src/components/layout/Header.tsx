@@ -23,7 +23,7 @@ export function Header() {
   useEffect(() => {
     if (user) {
       fetchNotifications();
-      
+
       // Show password change modal for first login
       if (user.isFirstLogin) {
         setShowPasswordModal(true);
@@ -49,13 +49,17 @@ export function Header() {
           {/* Left side - Role badge and title */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
             <div className="bg-gray-400 dark:bg-gray-600 text-white px-2 lg:px-3 py-1 rounded-full text-xs lg:text-sm font-medium inline-block">
-              {user?.role === 'WORKER' ? 'Worker' : user?.role === 'COMPANY_ADMIN' ? 'Company Admin' : 'Corporate Admin'}
+              {user?.role === 'WORKER'
+                ? 'Staff'
+                : user?.role === 'COMPANY_ADMIN'
+                ? 'Company Admin'
+                : 'Corporate Admin'}
             </div>
             <h1 className="text-lg lg:text-2xl font-semibold text-gray-900 dark:text-white truncate">
-              {user?.role === 'WORKER' ? 'Worker Dashboard' : 'Admin Dashboard'}
+              {user?.role === 'WORKER' ? 'Staff Dashboard' : 'Admin Dashboard'}
             </h1>
           </div>
-          
+
           {/* Right side - User info and actions */}
           <div className="flex items-center space-x-2 lg:space-x-4">
             {/* Theme Toggle - only render after mount to prevent hydration mismatch */}
@@ -75,7 +79,7 @@ export function Header() {
 
             {/* Notifications */}
             <div className="relative">
-              <button 
+              <button
                 className="relative p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-colors duration-200"
                 onClick={() => setShowNotifications(!showNotifications)}
               >
@@ -86,14 +90,16 @@ export function Header() {
                   </span>
                 )}
               </button>
-              
+
               <Dropdown
                 isOpen={showNotifications}
                 onClose={() => setShowNotifications(false)}
                 className="right-0 mt-2 w-72 lg:w-80 bg-white dark:bg-[#171717] rounded-lg shadow-lg border border-gray-200 dark:border-gray-700"
               >
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="font-medium text-gray-900 dark:text-white">Notifications</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-white">
+                    Notifications
+                  </h3>
                 </div>
                 <div className="max-h-64 overflow-y-auto">
                   {notifications.length === 0 ? (
@@ -105,7 +111,9 @@ export function Header() {
                       <div
                         key={notification.id}
                         className={`p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 ${
-                          !notification.isRead ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                          !notification.isRead
+                            ? 'bg-blue-50 dark:bg-blue-900/20'
+                            : ''
                         }`}
                       >
                         <h4 className="font-medium text-sm text-gray-900 dark:text-white">
@@ -123,7 +131,7 @@ export function Header() {
                 </div>
               </Dropdown>
             </div>
-            
+
             {/* User Profile */}
             <div className="hidden sm:flex items-center space-x-3">
               <div className="w-6 h-6 lg:w-8 lg:h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
@@ -134,11 +142,15 @@ export function Header() {
                   {user?.firstName} {user?.lastName}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                  {user?.role === 'WORKER' ? 'Worker' : user?.role === 'COMPANY_ADMIN' ? 'Company Admin' : 'Corporate Admin'}
+                  {user?.role === 'WORKER'
+                    ? 'Staff'
+                    : user?.role === 'COMPANY_ADMIN'
+                    ? 'Company Admin'
+                    : 'Corporate Admin'}
                 </p>
               </div>
             </div>
-            
+
             {/* Action buttons */}
             <div className="flex items-center space-x-1 lg:space-x-2">
               <button
@@ -148,7 +160,7 @@ export function Header() {
               >
                 <Lock className="w-4 h-4" />
               </button>
-              
+
               <button
                 onClick={logout}
                 className="p-1.5 lg:p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"

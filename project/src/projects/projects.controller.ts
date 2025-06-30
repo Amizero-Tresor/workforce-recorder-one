@@ -1,5 +1,20 @@
-import { Controller, Get, Post, Put, Body, Param, Query, UseGuards, Res } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  Res,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { Response } from 'express';
 import { Role } from '@prisma/client';
 import { ProjectsService } from './projects.service';
@@ -10,7 +25,10 @@ import { PaginationDto } from '../common/dto/pagination.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
-import { GetCurrentUser, CurrentUser } from '../common/decorators/current-user.decorator';
+import {
+  GetCurrentUser,
+  CurrentUser,
+} from '../common/decorators/current-user.decorator';
 
 @ApiTags('Projects')
 @Controller('projects')
@@ -24,7 +42,7 @@ export class ProjectsController {
   @ApiResponse({ status: 200, description: 'Projects retrieved successfully' })
   async findAll(
     @GetCurrentUser() currentUser: CurrentUser,
-    @Query() paginationDto: PaginationDto,
+    @Query() paginationDto: PaginationDto
   ) {
     return this.projectsService.findAll(currentUser, paginationDto);
   }
@@ -32,24 +50,24 @@ export class ProjectsController {
   @Get('export')
   @Roles(Role.COMPANY_ADMIN, Role.CORPORATE_ADMIN)
   @ApiOperation({ summary: 'Export projects to CSV or Excel' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'File exported successfully',
     headers: {
       'Content-Type': {
         description: 'MIME type of the exported file',
-        schema: { type: 'string' }
+        schema: { type: 'string' },
       },
       'Content-Disposition': {
         description: 'Attachment filename',
-        schema: { type: 'string' }
-      }
-    }
+        schema: { type: 'string' },
+      },
+    },
   })
   async exportProjects(
     @GetCurrentUser() currentUser: CurrentUser,
     @Query('format') format: 'csv' | 'excel' = 'csv',
-    @Res() res: Response,
+    @Res() res: Response
   ) {
     return this.projectsService.exportProjects(currentUser, format, res);
   }
@@ -69,7 +87,7 @@ export class ProjectsController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   async create(
     @GetCurrentUser() currentUser: CurrentUser,
-    @Body() createProjectDto: CreateProjectDto,
+    @Body() createProjectDto: CreateProjectDto
   ) {
     return this.projectsService.create(currentUser, createProjectDto);
   }
@@ -82,7 +100,7 @@ export class ProjectsController {
   async update(
     @GetCurrentUser() currentUser: CurrentUser,
     @Param('id') id: string,
-    @Body() updateProjectDto: UpdateProjectDto,
+    @Body() updateProjectDto: UpdateProjectDto
   ) {
     return this.projectsService.update(currentUser, id, updateProjectDto);
   }
@@ -90,13 +108,17 @@ export class ProjectsController {
   @Post(':id/assign-workers')
   @Roles(Role.COMPANY_ADMIN, Role.CORPORATE_ADMIN)
   @ApiOperation({ summary: 'Assign workers to project' })
-  @ApiResponse({ status: 200, description: 'Workers assigned successfully' })
+  @ApiResponse({ status: 200, description: 'Staff assigned successfully' })
   @ApiResponse({ status: 404, description: 'Project not found' })
   async assignWorkers(
     @GetCurrentUser() currentUser: CurrentUser,
     @Param('id') id: string,
-    @Body() assignWorkersDto: AssignWorkersDto,
+    @Body() assignWorkersDto: AssignWorkersDto
   ) {
-    return this.projectsService.assignWorkers(currentUser, id, assignWorkersDto);
+    return this.projectsService.assignWorkers(
+      currentUser,
+      id,
+      assignWorkersDto
+    );
   }
 }

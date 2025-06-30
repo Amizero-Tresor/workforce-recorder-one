@@ -9,18 +9,23 @@ import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { TimeLogDetailsModal } from '@/components/ui/TimeLogDetailsModal';
-import { 
-  Check, 
-  X, 
-  Edit3, 
+import {
+  Check,
+  X,
+  Edit3,
   Download,
   Search,
   Filter,
   MoreHorizontal,
   Eye,
-  FileText
+  FileText,
 } from 'lucide-react';
-import { formatDate, formatTime, formatDuration, getStatusColor } from '@/lib/utils';
+import {
+  formatDate,
+  formatTime,
+  formatDuration,
+  getStatusColor,
+} from '@/lib/utils';
 import toast from 'react-hot-toast';
 
 export default function AdminTimeLogsPage() {
@@ -29,7 +34,9 @@ export default function AdminTimeLogsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedLogs, setSelectedLogs] = useState<string[]>([]);
-  const [bulkAction, setBulkAction] = useState<'APPROVED' | 'REJECTED' | 'EDIT_REQUESTED' | ''>('');
+  const [bulkAction, setBulkAction] = useState<
+    'APPROVED' | 'REJECTED' | 'EDIT_REQUESTED' | ''
+  >('');
   const [feedback, setFeedback] = useState('');
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [showEditRequestModal, setShowEditRequestModal] = useState(false);
@@ -40,14 +47,14 @@ export default function AdminTimeLogsPage() {
     page: 1,
     limit: 10,
     total: 0,
-    totalPages: 0
+    totalPages: 0,
   });
   const [filters, setFilters] = useState<TimeLogFilters>({
     status: '',
     projectId: '',
     userId: '',
     startDate: '',
-    endDate: ''
+    endDate: '',
   });
 
   useEffect(() => {
@@ -61,17 +68,17 @@ export default function AdminTimeLogsPage() {
       const params = new URLSearchParams({
         page: pagination.page.toString(),
         limit: pagination.limit.toString(),
-        ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v))
+        ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v)),
       });
 
       const response = await api.get(`/time-logs?${params}`);
       const data: PaginatedResponse<TimeLog> = response.data;
-      
+
       setTimeLogs(data.data);
-      setPagination(prev => ({
+      setPagination((prev) => ({
         ...prev,
         total: data.meta.total,
-        totalPages: data.meta.totalPages
+        totalPages: data.meta.totalPages,
       }));
     } catch (error) {
       console.error('Error fetching time logs:', error);
@@ -94,14 +101,14 @@ export default function AdminTimeLogsPage() {
     if (selectedLogs.length === timeLogs.length) {
       setSelectedLogs([]);
     } else {
-      setSelectedLogs(timeLogs.map(log => log.id));
+      setSelectedLogs(timeLogs.map((log) => log.id));
     }
   };
 
   const handleSelectLog = (logId: string) => {
-    setSelectedLogs(prev => 
-      prev.includes(logId) 
-        ? prev.filter(id => id !== logId)
+    setSelectedLogs((prev) =>
+      prev.includes(logId)
+        ? prev.filter((id) => id !== logId)
         : [...prev, logId]
     );
   };
@@ -123,21 +130,30 @@ export default function AdminTimeLogsPage() {
       await api.post('/time-logs/bulk-action', {
         timeLogIds: selectedLogs,
         action: bulkAction,
-        feedback: feedback || undefined
+        feedback: feedback || undefined,
       });
 
-      toast.success(`Successfully ${bulkAction.toLowerCase()} ${selectedLogs.length} time logs`);
+      toast.success(
+        `Successfully ${bulkAction.toLowerCase()} ${
+          selectedLogs.length
+        } time logs`
+      );
       setSelectedLogs([]);
       setBulkAction('');
       setFeedback('');
       setShowBulkModal(false);
       fetchTimeLogs();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to perform bulk action');
+      toast.error(
+        error.response?.data?.message || 'Failed to perform bulk action'
+      );
     }
   };
 
-  const handleSingleAction = async (logId: string, action: 'APPROVED' | 'REJECTED') => {
+  const handleSingleAction = async (
+    logId: string,
+    action: 'APPROVED' | 'REJECTED'
+  ) => {
     try {
       await api.patch(`/time-logs/${logId}/review`, {
         status: action,
@@ -159,7 +175,7 @@ export default function AdminTimeLogsPage() {
     try {
       await api.patch(`/time-logs/${editRequestTimeLogId}/review`, {
         status: 'EDIT_REQUESTED',
-        feedback: feedback
+        feedback: feedback,
       });
 
       toast.success('Edit request sent successfully');
@@ -168,7 +184,9 @@ export default function AdminTimeLogsPage() {
       setFeedback('');
       fetchTimeLogs();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to send edit request');
+      toast.error(
+        error.response?.data?.message || 'Failed to send edit request'
+      );
     }
   };
 
@@ -181,18 +199,20 @@ export default function AdminTimeLogsPage() {
     try {
       const params = new URLSearchParams({
         format,
-        ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v))
+        ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v)),
       });
 
       const response = await api.get(`/time-logs/export?${params}`, {
-        responseType: 'blob'
+        responseType: 'blob',
       });
 
       const blob = new Blob([response.data]);
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `time-logs-${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'csv'}`;
+      link.download = `time-logs-${new Date().toISOString().split('T')[0]}.${
+        format === 'excel' ? 'xlsx' : 'csv'
+      }`;
       link.click();
       window.URL.revokeObjectURL(url);
 
@@ -205,7 +225,7 @@ export default function AdminTimeLogsPage() {
   const formatTimeWorked = (totalHours: number) => {
     const hours = Math.floor(totalHours);
     const minutes = Math.round((totalHours - hours) * 60);
-    
+
     if (hours === 0) {
       return `${minutes}m`;
     } else if (minutes === 0) {
@@ -226,18 +246,22 @@ export default function AdminTimeLogsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#171717] flex">
       <Sidebar />
-      
+
       <div className="flex-1 flex flex-col lg:ml-0">
         <Header />
-        
+
         <main className="flex-1 p-4 lg:p-6">
           <div className="bg-white dark:bg-[#171717] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
             {/* Header */}
             <div className="px-4 lg:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                 <div>
-                  <h1 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">Time Logs</h1>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Review and manage worker time entries</p>
+                  <h1 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">
+                    Time Logs
+                  </h1>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Review and manage worker time entries
+                  </p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                   <Button
@@ -267,7 +291,9 @@ export default function AdminTimeLogsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <select
                   value={filters.status}
-                  onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((prev) => ({ ...prev, status: e.target.value }))
+                  }
                   className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                 >
                   <option value="">All Status</option>
@@ -279,7 +305,12 @@ export default function AdminTimeLogsPage() {
 
                 <select
                   value={filters.projectId}
-                  onChange={(e) => setFilters(prev => ({ ...prev, projectId: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      projectId: e.target.value,
+                    }))
+                  }
                   className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                 >
                   <option value="">All Projects</option>
@@ -289,19 +320,26 @@ export default function AdminTimeLogsPage() {
                     </option>
                   ))}
                 </select>
-                
+
                 <input
                   type="date"
                   value={filters.startDate}
-                  onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      startDate: e.target.value,
+                    }))
+                  }
                   className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                   placeholder="Start Date"
                 />
-                
+
                 <input
                   type="date"
                   value={filters.endDate}
-                  onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((prev) => ({ ...prev, endDate: e.target.value }))
+                  }
                   className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                   placeholder="End Date"
                 />
@@ -359,7 +397,10 @@ export default function AdminTimeLogsPage() {
             {/* Mobile Card View */}
             <div className="lg:hidden">
               {timeLogs.map((log) => (
-                <div key={log.id} className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div
+                  key={log.id}
+                  className="p-4 border-b border-gray-200 dark:border-gray-700"
+                >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center space-x-3">
                       <input
@@ -372,33 +413,56 @@ export default function AdminTimeLogsPage() {
                         <p className="font-medium text-gray-900 dark:text-white text-sm">
                           {log.user?.firstName} {log.user?.lastName}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{log.user?.email}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {log.user?.email}
+                        </p>
                       </div>
                     </div>
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(log.status)}`}>
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        log.status
+                      )}`}
+                    >
                       {log.status === 'PENDING' && '⏳ Pending'}
                       {log.status === 'APPROVED' && '✅ Approved'}
                       {log.status === 'REJECTED' && '❌ Rejected'}
                       {log.status === 'EDIT_REQUESTED' && '📝 Edit Requested'}
                     </span>
                   </div>
-                  
+
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Project:</span>
-                      <span className="font-medium text-gray-900 dark:text-white">{log.project?.name}</span>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Project:
+                      </span>
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        {log.project?.name}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Date:</span>
-                      <span className="text-gray-900 dark:text-white">{formatDate(log.startTime)}</span>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Date:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {formatDate(log.startTime)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Time:</span>
-                      <span className="text-gray-900 dark:text-white">{formatTime(log.startTime)} - {log.endTime ? formatTime(log.endTime) : 'Ongoing'}</span>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Time:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {formatTime(log.startTime)} -{' '}
+                        {log.endTime ? formatTime(log.endTime) : 'Ongoing'}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Duration:</span>
-                      <span className="font-medium text-gray-900 dark:text-white">{formatTimeWorked(log.totalHours || 0)}</span>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Duration:
+                      </span>
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        {formatTimeWorked(log.totalHours || 0)}
+                      </span>
                     </div>
                   </div>
 
@@ -448,13 +512,16 @@ export default function AdminTimeLogsPage() {
                     <th className="px-6 py-3 text-left">
                       <input
                         type="checkbox"
-                        checked={selectedLogs.length === timeLogs.length && timeLogs.length > 0}
+                        checked={
+                          selectedLogs.length === timeLogs.length &&
+                          timeLogs.length > 0
+                        }
                         onChange={handleSelectAll}
                         className="rounded border-gray-300 dark:border-gray-600 text-[#008080] focus:ring-[#008080] bg-white dark:bg-[#171717]"
                       />
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Worker
+                      Staff
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Project
@@ -478,7 +545,10 @@ export default function AdminTimeLogsPage() {
                 </thead>
                 <tbody className="bg-white dark:bg-[#171717] divide-y divide-gray-200 dark:divide-gray-700">
                   {timeLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-150">
+                    <tr
+                      key={log.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-150"
+                    >
                       <td className="px-6 py-4">
                         <input
                           type="checkbox"
@@ -521,11 +591,16 @@ export default function AdminTimeLogsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(log.status)}`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                            log.status
+                          )}`}
+                        >
                           {log.status === 'PENDING' && '⏳ Pending'}
                           {log.status === 'APPROVED' && '✅ Approved'}
                           {log.status === 'REJECTED' && '❌ Rejected'}
-                          {log.status === 'EDIT_REQUESTED' && '📝 Edit Requested'}
+                          {log.status === 'EDIT_REQUESTED' &&
+                            '📝 Edit Requested'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -533,14 +608,18 @@ export default function AdminTimeLogsPage() {
                           {log.status === 'PENDING' && (
                             <>
                               <button
-                                onClick={() => handleSingleAction(log.id, 'APPROVED')}
+                                onClick={() =>
+                                  handleSingleAction(log.id, 'APPROVED')
+                                }
                                 className="text-green-600 hover:text-green-900 p-1 rounded-full hover:bg-green-100 dark:hover:bg-green-900/20 transition-colors duration-150"
                                 title="Approve"
                               >
                                 <Check className="w-4 h-4" />
                               </button>
                               <button
-                                onClick={() => handleSingleAction(log.id, 'REJECTED')}
+                                onClick={() =>
+                                  handleSingleAction(log.id, 'REJECTED')
+                                }
                                 className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors duration-150"
                                 title="Reject"
                               >
@@ -574,7 +653,9 @@ export default function AdminTimeLogsPage() {
             {timeLogs.length === 0 && (
               <div className="text-center py-12">
                 <FileText className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No time logs found</h3>
+                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                  No time logs found
+                </h3>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   No time logs match your current filters.
                 </p>
@@ -586,11 +667,21 @@ export default function AdminTimeLogsPage() {
               <div className="px-4 lg:px-6 py-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                   <div className="text-sm text-gray-700 dark:text-gray-300 text-center sm:text-left">
-                    Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
+                    Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+                    {Math.min(
+                      pagination.page * pagination.limit,
+                      pagination.total
+                    )}{' '}
+                    of {pagination.total} results
                   </div>
                   <div className="flex items-center justify-center space-x-2">
                     <Button
-                      onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                      onClick={() =>
+                        setPagination((prev) => ({
+                          ...prev,
+                          page: prev.page - 1,
+                        }))
+                      }
                       disabled={pagination.page === 1}
                       variant="outline"
                       size="sm"
@@ -601,7 +692,12 @@ export default function AdminTimeLogsPage() {
                       Page {pagination.page} of {pagination.totalPages}
                     </span>
                     <Button
-                      onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                      onClick={() =>
+                        setPagination((prev) => ({
+                          ...prev,
+                          page: prev.page + 1,
+                        }))
+                      }
                       disabled={pagination.page === pagination.totalPages}
                       variant="outline"
                       size="sm"
@@ -629,7 +725,7 @@ export default function AdminTimeLogsPage() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Feedback for Worker *
+              Feedback for Staff *
             </label>
             <textarea
               value={feedback}
@@ -673,23 +769,28 @@ export default function AdminTimeLogsPage() {
           setFeedback('');
         }}
         title={
-          bulkAction === 'APPROVED' ? 'Approve Selected Time Logs' :
-          bulkAction === 'REJECTED' ? 'Reject Selected Time Logs' :
-          'Request Edit for Selected Time Logs'
+          bulkAction === 'APPROVED'
+            ? 'Approve Selected Time Logs'
+            : bulkAction === 'REJECTED'
+            ? 'Reject Selected Time Logs'
+            : 'Request Edit for Selected Time Logs'
         }
       >
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Feedback {bulkAction === 'EDIT_REQUESTED' ? '(Required)' : '(Optional)'}
+              Feedback{' '}
+              {bulkAction === 'EDIT_REQUESTED' ? '(Required)' : '(Optional)'}
             </label>
             <textarea
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
               placeholder={
-                bulkAction === 'APPROVED' ? 'Add feedback for workers...' :
-                bulkAction === 'REJECTED' ? 'Reason for rejection...' :
-                'What needs to be edited?'
+                bulkAction === 'APPROVED'
+                  ? 'Add feedback for workers...'
+                  : bulkAction === 'REJECTED'
+                  ? 'Reason for rejection...'
+                  : 'What needs to be edited?'
               }
               className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
               rows={3}
@@ -713,12 +814,19 @@ export default function AdminTimeLogsPage() {
               onClick={handleBulkAction}
               disabled={bulkAction === 'EDIT_REQUESTED' && !feedback.trim()}
               className={`w-full sm:w-auto ${
-                bulkAction === 'APPROVED' ? 'bg-green-600 hover:bg-green-700' :
-                bulkAction === 'REJECTED' ? 'bg-red-600 hover:bg-red-700' :
-                'bg-orange-600 hover:bg-orange-700'
+                bulkAction === 'APPROVED'
+                  ? 'bg-green-600 hover:bg-green-700'
+                  : bulkAction === 'REJECTED'
+                  ? 'bg-red-600 hover:bg-red-700'
+                  : 'bg-orange-600 hover:bg-orange-700'
               }`}
             >
-              Confirm {bulkAction === 'APPROVED' ? 'Approval' : bulkAction === 'REJECTED' ? 'Rejection' : 'Edit Request'}
+              Confirm{' '}
+              {bulkAction === 'APPROVED'
+                ? 'Approval'
+                : bulkAction === 'REJECTED'
+                ? 'Rejection'
+                : 'Edit Request'}
             </Button>
           </div>
         </div>
