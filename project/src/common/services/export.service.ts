@@ -13,13 +13,13 @@ export class ExportService {
     }
 
     // Get headers from the first object
-    const headers = Object.keys(data[0]).map(key => ({
+    const headers = Object.keys(data[0]).map((key) => ({
       id: key,
-      title: this.formatHeader(key)
+      title: this.formatHeader(key),
     }));
 
     const tempFilePath = path.join(process.cwd(), 'temp', `${filename}.csv`);
-    
+
     // Ensure temp directory exists
     const tempDir = path.dirname(tempFilePath);
     if (!fs.existsSync(tempDir)) {
@@ -28,14 +28,17 @@ export class ExportService {
 
     const writer = csvWriter.createObjectCsvWriter({
       path: tempFilePath,
-      header: headers
+      header: headers,
     });
 
     await writer.writeRecords(data);
 
     res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}.csv"`);
-    
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${filename}.csv"`
+    );
+
     const fileStream = fs.createReadStream(tempFilePath);
     fileStream.pipe(res);
 
@@ -64,16 +67,22 @@ export class ExportService {
     // Generate buffer
     const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
 
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}.xlsx"`);
-    
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${filename}.xlsx"`
+    );
+
     res.send(buffer);
   }
 
   private formatHeader(key: string): string {
     return key
       .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, str => str.toUpperCase())
+      .replace(/^./, (str) => str.toUpperCase())
       .trim();
   }
 
@@ -81,10 +90,10 @@ export class ExportService {
     if (!data || data.length === 0) return [];
 
     const keys = Object.keys(data[0]);
-    const widths = keys.map(key => {
+    const widths = keys.map((key) => {
       const maxLength = Math.max(
         key.length,
-        ...data.map(row => String(row[key] || '').length)
+        ...data.map((row) => String(row[key] || '').length)
       );
       return { wch: Math.min(maxLength + 2, 50) }; // Cap at 50 characters
     });
@@ -95,17 +104,25 @@ export class ExportService {
   formatTimeLogForExport(timeLog: any) {
     return {
       'Log ID': timeLog.id,
-      'Worker Name': `${timeLog.user.firstName} ${timeLog.user.lastName}`,
-      'Worker Email': timeLog.user.email,
-      'Project': timeLog.project.name,
-      'Start Time': timeLog.startTime ? new Date(timeLog.startTime).toLocaleString() : '',
-      'End Time': timeLog.endTime ? new Date(timeLog.endTime).toLocaleString() : '',
+      'Staff Name': `${timeLog.user.firstName} ${timeLog.user.lastName}`,
+      'Staff Email': timeLog.user.email,
+      Project: timeLog.project.name,
+      'Start Time': timeLog.startTime
+        ? new Date(timeLog.startTime).toLocaleString()
+        : '',
+      'End Time': timeLog.endTime
+        ? new Date(timeLog.endTime).toLocaleString()
+        : '',
       'Total Time': this.formatDuration(timeLog.totalHours || 0),
-      'Description': timeLog.description || '',
-      'Status': timeLog.status,
-      'Reviewer': timeLog.reviewer ? `${timeLog.reviewer.firstName} ${timeLog.reviewer.lastName}` : '',
-      'Reviewed At': timeLog.reviewedAt ? new Date(timeLog.reviewedAt).toLocaleString() : '',
-      'Feedback': timeLog.feedback || '',
+      Description: timeLog.description || '',
+      Status: timeLog.status,
+      Reviewer: timeLog.reviewer
+        ? `${timeLog.reviewer.firstName} ${timeLog.reviewer.lastName}`
+        : '',
+      'Reviewed At': timeLog.reviewedAt
+        ? new Date(timeLog.reviewedAt).toLocaleString()
+        : '',
+      Feedback: timeLog.feedback || '',
       'Created At': new Date(timeLog.createdAt).toLocaleString(),
     };
   }
@@ -115,12 +132,14 @@ export class ExportService {
       'User ID': user.id,
       'First Name': user.firstName,
       'Last Name': user.lastName,
-      'Email': user.email,
+      Email: user.email,
       'Phone Number': user.phoneNumber || '',
-      'Role': user.role,
-      'Status': user.status,
-      'Company': user.company?.name || '',
-      'Last Login': user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : 'Never',
+      Role: user.role,
+      Status: user.status,
+      Company: user.company?.name || '',
+      'Last Login': user.lastLoginAt
+        ? new Date(user.lastLoginAt).toLocaleString()
+        : 'Never',
       'Created At': new Date(user.createdAt).toLocaleString(),
     };
   }
@@ -128,11 +147,11 @@ export class ExportService {
   formatProjectForExport(project: any) {
     return {
       'Project ID': project.id,
-      'Name': project.name,
-      'Description': project.description || '',
-      'Company': project.company?.name || '',
-      'Status': project.isActive ? 'Active' : 'Inactive',
-      'Workers Count': project._count?.workerProjects || 0,
+      Name: project.name,
+      Description: project.description || '',
+      Company: project.company?.name || '',
+      Status: project.isActive ? 'Active' : 'Inactive',
+      'Staff Count': project._count?.workerProjects || 0,
       'Time Logs Count': project._count?.timeLogs || 0,
       'Created At': new Date(project.createdAt).toLocaleString(),
     };
@@ -141,8 +160,8 @@ export class ExportService {
   formatCompanyForExport(company: any) {
     return {
       'Company ID': company.id,
-      'Name': company.name,
-      'Corporate': company.corporate?.name || '',
+      Name: company.name,
+      Corporate: company.corporate?.name || '',
       'Users Count': company._count?.users || 0,
       'Projects Count': company._count?.projects || 0,
       'Created At': new Date(company.createdAt).toLocaleString(),
@@ -152,7 +171,7 @@ export class ExportService {
   private formatDuration(totalHours: number): string {
     const hours = Math.floor(totalHours);
     const minutes = Math.round((totalHours - hours) * 60);
-    
+
     if (hours === 0) {
       return `${minutes}m`;
     } else if (minutes === 0) {

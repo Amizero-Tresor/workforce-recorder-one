@@ -9,8 +9,8 @@ import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { ProjectDetailsModal } from '@/components/ui/ProjectDetailsModal';
-import { 
-  Plus, 
+import {
+  Plus,
   Download,
   Search,
   Filter,
@@ -19,7 +19,7 @@ import {
   Users,
   Eye,
   Settings,
-  UserPlus
+  UserPlus,
 } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -41,7 +41,7 @@ export default function AdminProjectsPage() {
     page: 1,
     limit: 10,
     total: 0,
-    totalPages: 0
+    totalPages: 0,
   });
 
   useEffect(() => {
@@ -53,17 +53,17 @@ export default function AdminProjectsPage() {
       setLoading(true);
       const params = new URLSearchParams({
         page: pagination.page.toString(),
-        limit: pagination.limit.toString()
+        limit: pagination.limit.toString(),
       });
 
       const response = await api.get(`/projects?${params}`);
       const data: PaginatedResponse<Project> = response.data;
-      
+
       setProjects(data.data);
-      setPagination(prev => ({
+      setPagination((prev) => ({
         ...prev,
         total: data.meta.total,
-        totalPages: data.meta.totalPages
+        totalPages: data.meta.totalPages,
       }));
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -78,9 +78,10 @@ export default function AdminProjectsPage() {
       setWorkersLoading(true);
       const response = await api.get(`/projects/${projectId}`);
       const projectData = response.data;
-      
+
       // Extract workers from workerProjects relationship
-      const workers = projectData.workerProjects?.map((wp: any) => wp.worker) || [];
+      const workers =
+        projectData.workerProjects?.map((wp: any) => wp.worker) || [];
       setProjectWorkers(workers);
     } catch (error) {
       console.error('Error fetching project workers:', error);
@@ -106,14 +107,16 @@ export default function AdminProjectsPage() {
       const params = new URLSearchParams({ format });
 
       const response = await api.get(`/projects/export?${params}`, {
-        responseType: 'blob'
+        responseType: 'blob',
       });
 
       const blob = new Blob([response.data]);
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `projects-${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'csv'}`;
+      link.download = `projects-${new Date().toISOString().split('T')[0]}.${
+        format === 'excel' ? 'xlsx' : 'csv'
+      }`;
       link.click();
       window.URL.revokeObjectURL(url);
 
@@ -123,9 +126,11 @@ export default function AdminProjectsPage() {
     }
   };
 
-  const filteredProjects = projects.filter(project =>
-    project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (project.description && project.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredProjects = projects.filter(
+    (project) =>
+      project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (project.description &&
+        project.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   if (loading) {
@@ -139,18 +144,22 @@ export default function AdminProjectsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#171717] flex">
       <Sidebar />
-      
+
       <div className="flex-1 flex flex-col lg:ml-0">
         <Header />
-        
+
         <main className="flex-1 p-4 lg:p-6">
           <div className="bg-white dark:bg-[#171717] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
             {/* Header */}
             <div className="px-4 lg:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                 <div>
-                  <h1 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">Projects Management</h1>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Manage projects and assign workers</p>
+                  <h1 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">
+                    Projects Management
+                  </h1>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Manage projects and assign workers
+                  </p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                   <Button
@@ -212,7 +221,10 @@ export default function AdminProjectsPage() {
             {/* Mobile Card View */}
             <div className="lg:hidden">
               {filteredProjects.map((project) => (
-                <div key={project.id} className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div
+                  key={project.id}
+                  className="p-4 border-b border-gray-200 dark:border-gray-700"
+                >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
@@ -222,36 +234,50 @@ export default function AdminProjectsPage() {
                         {project.description || 'No description'}
                       </div>
                     </div>
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ml-2 ${
-                      project.isActive 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
-                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ml-2 ${
+                        project.isActive
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                          : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                      }`}
+                    >
                       {project.isActive ? '✅ Active' : '❌ Inactive'}
                     </span>
                   </div>
-                  
+
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Workers:</span>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Staff:
+                      </span>
                       <div className="flex items-center space-x-2">
-                        <span className="text-gray-900 dark:text-white">{project._count?.workerProjects || 0}</span>
+                        <span className="text-gray-900 dark:text-white">
+                          {project._count?.workerProjects || 0}
+                        </span>
                         <button
                           onClick={() => handleViewWorkers(project)}
                           className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
-                          title="View Workers"
+                          title="View Staff"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Time Logs:</span>
-                      <span className="text-gray-900 dark:text-white">{project._count?.timeLogs || 0}</span>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Time Logs:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {project._count?.timeLogs || 0}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Created:</span>
-                      <span className="text-gray-900 dark:text-white">{formatDate(project.createdAt)}</span>
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Created:
+                      </span>
+                      <span className="text-gray-900 dark:text-white">
+                        {formatDate(project.createdAt)}
+                      </span>
                     </div>
                   </div>
 
@@ -265,7 +291,7 @@ export default function AdminProjectsPage() {
                     </button>
                     <button
                       className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 p-2 rounded-full hover:bg-green-100 dark:hover:bg-green-900/20"
-                      title="Assign Workers"
+                      title="Assign Staff"
                     >
                       <UserPlus className="w-4 h-4" />
                     </button>
@@ -289,7 +315,7 @@ export default function AdminProjectsPage() {
                       Project
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Workers
+                      Staff
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Time Logs
@@ -307,7 +333,10 @@ export default function AdminProjectsPage() {
                 </thead>
                 <tbody className="bg-white dark:bg-[#171717] divide-y divide-gray-200 dark:divide-gray-700">
                   {filteredProjects.map((project) => (
-                    <tr key={project.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <tr
+                      key={project.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800"
+                    >
                       <td className="px-6 py-4">
                         <div>
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
@@ -326,7 +355,7 @@ export default function AdminProjectsPage() {
                           <button
                             onClick={() => handleViewWorkers(project)}
                             className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
-                            title="View Workers"
+                            title="View Staff"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
@@ -338,11 +367,13 @@ export default function AdminProjectsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          project.isActive 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
-                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                        }`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            project.isActive
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                          }`}
+                        >
                           {project.isActive ? '✅ Active' : '❌ Inactive'}
                         </span>
                       </td>
@@ -360,7 +391,7 @@ export default function AdminProjectsPage() {
                           </button>
                           <button
                             className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 p-1 rounded-full hover:bg-green-100 dark:hover:bg-green-900/20"
-                            title="Assign Workers"
+                            title="Assign Staff"
                           >
                             <UserPlus className="w-4 h-4" />
                           </button>
@@ -384,12 +415,13 @@ export default function AdminProjectsPage() {
                 <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Settings className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                 </div>
-                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No projects found</h3>
+                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                  No projects found
+                </h3>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  {searchTerm || statusFilter 
+                  {searchTerm || statusFilter
                     ? 'No projects match your current filters.'
-                    : 'Get started by creating your first project.'
-                  }
+                    : 'Get started by creating your first project.'}
                 </p>
               </div>
             )}
@@ -399,11 +431,21 @@ export default function AdminProjectsPage() {
               <div className="px-4 lg:px-6 py-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                   <div className="text-sm text-gray-700 dark:text-gray-300 text-center sm:text-left">
-                    Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
+                    Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+                    {Math.min(
+                      pagination.page * pagination.limit,
+                      pagination.total
+                    )}{' '}
+                    of {pagination.total} results
                   </div>
                   <div className="flex items-center justify-center space-x-2">
                     <Button
-                      onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                      onClick={() =>
+                        setPagination((prev) => ({
+                          ...prev,
+                          page: prev.page - 1,
+                        }))
+                      }
                       disabled={pagination.page === 1}
                       variant="outline"
                       size="sm"
@@ -414,7 +456,12 @@ export default function AdminProjectsPage() {
                       Page {pagination.page} of {pagination.totalPages}
                     </span>
                     <Button
-                      onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                      onClick={() =>
+                        setPagination((prev) => ({
+                          ...prev,
+                          page: prev.page + 1,
+                        }))
+                      }
                       disabled={pagination.page === pagination.totalPages}
                       variant="outline"
                       size="sm"
@@ -429,7 +476,7 @@ export default function AdminProjectsPage() {
         </main>
       </div>
 
-      {/* Project Workers Modal */}
+      {/* Project Staff Modal */}
       <Modal
         isOpen={showWorkersModal}
         onClose={() => {
@@ -437,20 +484,21 @@ export default function AdminProjectsPage() {
           setSelectedProject(null);
           setProjectWorkers([]);
         }}
-        title={`Workers - ${selectedProject?.name}`}
+        title={`Staff - ${selectedProject?.name}`}
         size="lg"
       >
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
             <p className="text-sm text-gray-600 dark:text-gray-300">
-              {selectedProject?.description || 'No project description available'}
+              {selectedProject?.description ||
+                'No project description available'}
             </p>
             <Button
               size="sm"
               className="flex items-center space-x-2 bg-[#008080] hover:bg-[#006666]"
             >
               <UserPlus className="w-4 h-4" />
-              <span>Assign Workers</span>
+              <span>Assign Staff</span>
             </Button>
           </div>
 
@@ -461,7 +509,9 @@ export default function AdminProjectsPage() {
           ) : projectWorkers.length === 0 ? (
             <div className="text-center py-8">
               <Users className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No workers assigned</h3>
+              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                No workers assigned
+              </h3>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 This project doesn't have any workers assigned yet.
               </p>
@@ -469,11 +519,15 @@ export default function AdminProjectsPage() {
           ) : (
             <div className="space-y-3 max-h-64 overflow-y-auto">
               {projectWorkers.map((worker) => (
-                <div key={worker.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div
+                  key={worker.id}
+                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                >
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-gradient-to-br from-[#008080] to-[#006666] rounded-full flex items-center justify-center">
                       <span className="text-white font-medium text-xs">
-                        {worker.firstName[0]}{worker.lastName[0]}
+                        {worker.firstName[0]}
+                        {worker.lastName[0]}
                       </span>
                     </div>
                     <div>
@@ -486,11 +540,13 @@ export default function AdminProjectsPage() {
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      worker.status === 'ACTIVE' 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
-                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        worker.status === 'ACTIVE'
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                          : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                      }`}
+                    >
                       {worker.status === 'ACTIVE' ? 'Active' : 'Inactive'}
                     </span>
                   </div>

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Role, UserStatus } from '@prisma/client';
 import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
@@ -16,7 +21,7 @@ export class UsersService {
     private db: DatabaseService,
     private emailService: EmailService,
     private auditLogsService: AuditLogsService,
-    private exportService: ExportService,
+    private exportService: ExportService
   ) {}
 
   async findById(id: string) {
@@ -54,7 +59,7 @@ export class UsersService {
   async findAll(
     currentUser: any,
     paginationDto: PaginationDto,
-    role?: Role,
+    role?: Role
   ): Promise<PaginatedResponse<any>> {
     const { page, limit } = paginationDto;
     const skip = (page - 1) * limit;
@@ -114,7 +119,7 @@ export class UsersService {
     currentUser: any,
     format: 'csv' | 'excel',
     role?: Role,
-    res?: Response,
+    res?: Response
   ) {
     let whereClause: any = {};
 
@@ -149,7 +154,7 @@ export class UsersService {
       },
     });
 
-    const exportData = users.map(user => 
+    const exportData = users.map((user) =>
       this.exportService.formatUserForExport(user)
     );
 
@@ -201,7 +206,7 @@ export class UsersService {
     await this.emailService.sendInvitationEmail(
       user.email,
       `${user.firstName} ${user.lastName}`,
-      tempPassword,
+      tempPassword
     );
 
     // Log the action
@@ -297,12 +302,14 @@ export class UsersService {
 
   private checkCreatePermissions(currentUser: any, targetRole: Role) {
     if (currentUser.role === Role.WORKER) {
-      throw new ForbiddenException('Workers cannot create users');
+      throw new ForbiddenException('Staff cannot create users');
     }
 
     if (currentUser.role === Role.COMPANY_ADMIN) {
       if (targetRole === Role.CORPORATE_ADMIN) {
-        throw new ForbiddenException('Company admins cannot create corporate admins');
+        throw new ForbiddenException(
+          'Company admins cannot create corporate admins'
+        );
       }
     }
   }
@@ -310,22 +317,27 @@ export class UsersService {
   private checkUpdatePermissions(currentUser: any, targetUser: any) {
     if (currentUser.role === Role.WORKER) {
       if (currentUser.id !== targetUser.id) {
-        throw new ForbiddenException('Workers can only update their own profile');
+        throw new ForbiddenException('Staff can only update their own profile');
       }
     }
 
     if (currentUser.role === Role.COMPANY_ADMIN) {
       if (targetUser.companyId !== currentUser.companyId) {
-        throw new ForbiddenException('Company admins can only manage users in their company');
+        throw new ForbiddenException(
+          'Company admins can only manage users in their company'
+        );
       }
       if (targetUser.role === Role.CORPORATE_ADMIN) {
-        throw new ForbiddenException('Company admins cannot manage corporate admins');
+        throw new ForbiddenException(
+          'Company admins cannot manage corporate admins'
+        );
       }
     }
   }
 
   private generateTempPassword(): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+    const chars =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
     let result = '';
     for (let i = 0; i < 12; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));

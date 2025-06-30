@@ -8,8 +8,8 @@ import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
-import { 
-  Plus, 
+import {
+  Plus,
   Download,
   Search,
   Filter,
@@ -19,7 +19,7 @@ import {
   UserX,
   Mail,
   Shield,
-  ShieldCheck
+  ShieldCheck,
 } from 'lucide-react';
 import { formatDate, getRoleDisplayName } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -34,12 +34,14 @@ export default function AdminWorkersPage() {
   const [roleFilter, setRoleFilter] = useState('');
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [selectedWorker, setSelectedWorker] = useState<User | null>(null);
-  const [statusAction, setStatusAction] = useState<'ACTIVE' | 'DEACTIVATED'>('ACTIVE');
+  const [statusAction, setStatusAction] = useState<'ACTIVE' | 'DEACTIVATED'>(
+    'ACTIVE'
+  );
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     total: 0,
-    totalPages: 0
+    totalPages: 0,
   });
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function AdminWorkersPage() {
       setLoading(true);
       const params = new URLSearchParams({
         page: pagination.page.toString(),
-        limit: pagination.limit.toString()
+        limit: pagination.limit.toString(),
       });
 
       // Add role filter to params if selected
@@ -63,14 +65,14 @@ export default function AdminWorkersPage() {
 
       const response = await api.get(`/users?${params}`);
       const data: PaginatedResponse<User> = response.data;
-      
-      console.log('Workers response:', data);
-      
+
+      console.log('Staff response:', data);
+
       setWorkers(data.data);
-      setPagination(prev => ({
+      setPagination((prev) => ({
         ...prev,
         total: data.meta.total,
-        totalPages: data.meta.totalPages
+        totalPages: data.meta.totalPages,
       }));
     } catch (error) {
       console.error('Error fetching workers:', error);
@@ -90,21 +92,25 @@ export default function AdminWorkersPage() {
     if (!selectedWorker) return;
 
     try {
-      await api.patch(`/users/${selectedWorker.id}/status`, { status: statusAction });
-      
+      await api.patch(`/users/${selectedWorker.id}/status`, {
+        status: statusAction,
+      });
+
       toast.success(`User ${statusAction.toLowerCase()}`);
       setShowStatusModal(false);
       setSelectedWorker(null);
       fetchWorkers();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to update user status');
+      toast.error(
+        error.response?.data?.message || 'Failed to update user status'
+      );
     }
   };
 
   const handleExport = async (format: 'csv' | 'excel') => {
     try {
       const params = new URLSearchParams({
-        format
+        format,
       });
 
       // Add role filter to export params if selected
@@ -113,27 +119,30 @@ export default function AdminWorkersPage() {
       }
 
       const response = await api.get(`/users/export?${params}`, {
-        responseType: 'blob'
+        responseType: 'blob',
       });
 
       const blob = new Blob([response.data]);
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `workers-${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'csv'}`;
+      link.download = `workers-${new Date().toISOString().split('T')[0]}.${
+        format === 'excel' ? 'xlsx' : 'csv'
+      }`;
       link.click();
       window.URL.revokeObjectURL(url);
 
-      toast.success(`Workers exported as ${format.toUpperCase()}`);
+      toast.success(`Staff exported as ${format.toUpperCase()}`);
     } catch (error) {
       toast.error('Failed to export workers');
     }
   };
 
-  const filteredWorkers = workers.filter(worker =>
-    worker.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    worker.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    worker.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredWorkers = workers.filter(
+    (worker) =>
+      worker.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      worker.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      worker.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
@@ -147,18 +156,22 @@ export default function AdminWorkersPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#171717] flex">
       <Sidebar />
-      
+
       <div className="flex-1 flex flex-col lg:ml-0">
         <Header />
-        
+
         <main className="flex-1 p-4 lg:p-6">
           <div className="bg-white dark:bg-[#171717] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
             {/* Header */}
             <div className="px-4 lg:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                 <div>
-                  <h1 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">Workers Management</h1>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Manage your team members and their access</p>
+                  <h1 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">
+                    Staff Management
+                  </h1>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Manage your team members and their access
+                  </p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                   <Button
@@ -168,7 +181,7 @@ export default function AdminWorkersPage() {
                     className="flex items-center justify-center space-x-2"
                   >
                     <Plus className="w-4 h-4" />
-                    <span>Add Worker</span>
+                    <span>Add Staff</span>
                   </Button>
                   <Button
                     onClick={() => handleExport('csv')}
@@ -210,12 +223,12 @@ export default function AdminWorkersPage() {
                   onChange={(e) => {
                     console.log('Role filter changed to:', e.target.value);
                     setRoleFilter(e.target.value);
-                    setPagination(prev => ({ ...prev, page: 1 })); // Reset to first page when filter changes
+                    setPagination((prev) => ({ ...prev, page: 1 })); // Reset to first page when filter changes
                   }}
                   className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] text-sm bg-white dark:bg-[#171717] text-gray-900 dark:text-white"
                 >
                   <option value="">All Roles</option>
-                  <option value="WORKER">Workers</option>
+                  <option value="WORKER">Staff</option>
                   <option value="COMPANY_ADMIN">Company Admins</option>
                   {user?.role === 'CORPORATE_ADMIN' && (
                     <option value="CORPORATE_ADMIN">Corporate Admins</option>
@@ -227,11 +240,15 @@ export default function AdminWorkersPage() {
             {/* Mobile Card View */}
             <div className="lg:hidden">
               {filteredWorkers.map((worker) => (
-                <div key={worker.id} className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div
+                  key={worker.id}
+                  className="p-4 border-b border-gray-200 dark:border-gray-700"
+                >
                   <div className="flex items-start space-x-3 mb-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-[#008080] to-[#006666] rounded-full flex items-center justify-center">
                       <span className="text-white font-medium text-sm">
-                        {worker.firstName[0]}{worker.lastName[0]}
+                        {worker.firstName[0]}
+                        {worker.lastName[0]}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -248,23 +265,33 @@ export default function AdminWorkersPage() {
                       )}
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between mb-3">
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      worker.role === 'CORPORATE_ADMIN' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' :
-                      worker.role === 'COMPANY_ADMIN' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' :
-                      'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                    }`}>
-                      {worker.role === 'CORPORATE_ADMIN' && <Shield className="w-3 h-3 mr-1" />}
-                      {worker.role === 'COMPANY_ADMIN' && <ShieldCheck className="w-3 h-3 mr-1" />}
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        worker.role === 'CORPORATE_ADMIN'
+                          ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300'
+                          : worker.role === 'COMPANY_ADMIN'
+                          ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+                          : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                      }`}
+                    >
+                      {worker.role === 'CORPORATE_ADMIN' && (
+                        <Shield className="w-3 h-3 mr-1" />
+                      )}
+                      {worker.role === 'COMPANY_ADMIN' && (
+                        <ShieldCheck className="w-3 h-3 mr-1" />
+                      )}
                       {getRoleDisplayName(worker.role)}
                     </span>
-                    
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      worker.status === 'ACTIVE' 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
-                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                    }`}>
+
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        worker.status === 'ACTIVE'
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                          : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                      }`}
+                    >
                       {worker.status === 'ACTIVE' ? (
                         <>
                           <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
@@ -280,8 +307,13 @@ export default function AdminWorkersPage() {
                   </div>
 
                   <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                    Last login: {worker.lastLoginAt ? formatDate(worker.lastLoginAt) : (
-                      <span className="text-yellow-600 dark:text-yellow-400">Never logged in</span>
+                    Last login:{' '}
+                    {worker.lastLoginAt ? (
+                      formatDate(worker.lastLoginAt)
+                    ) : (
+                      <span className="text-yellow-600 dark:text-yellow-400">
+                        Never logged in
+                      </span>
                     )}
                   </div>
 
@@ -300,9 +332,17 @@ export default function AdminWorkersPage() {
                           ? 'text-red-600 hover:text-red-900 hover:bg-red-100 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20'
                           : 'text-green-600 hover:text-green-900 hover:bg-green-100 dark:text-green-400 dark:hover:text-green-300 dark:hover:bg-green-900/20'
                       }`}
-                      title={worker.status === 'ACTIVE' ? 'Deactivate User' : 'Activate User'}
+                      title={
+                        worker.status === 'ACTIVE'
+                          ? 'Deactivate User'
+                          : 'Activate User'
+                      }
                     >
-                      {worker.status === 'ACTIVE' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                      {worker.status === 'ACTIVE' ? (
+                        <UserX className="w-4 h-4" />
+                      ) : (
+                        <UserCheck className="w-4 h-4" />
+                      )}
                     </button>
                     {/* Commented out Send Email button - might need in future */}
                     {/* <button
@@ -340,12 +380,16 @@ export default function AdminWorkersPage() {
                 </thead>
                 <tbody className="bg-white dark:bg-[#171717] divide-y divide-gray-200 dark:divide-gray-700">
                   {filteredWorkers.map((worker) => (
-                    <tr key={worker.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <tr
+                      key={worker.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800"
+                    >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="w-10 h-10 bg-gradient-to-br from-[#008080] to-[#006666] rounded-full flex items-center justify-center">
                             <span className="text-white font-medium text-sm">
-                              {worker.firstName[0]}{worker.lastName[0]}
+                              {worker.firstName[0]}
+                              {worker.lastName[0]}
                             </span>
                           </div>
                           <div className="ml-4">
@@ -364,22 +408,32 @@ export default function AdminWorkersPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          worker.role === 'CORPORATE_ADMIN' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' :
-                          worker.role === 'COMPANY_ADMIN' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' :
-                          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                        }`}>
-                          {worker.role === 'CORPORATE_ADMIN' && <Shield className="w-3 h-3 mr-1" />}
-                          {worker.role === 'COMPANY_ADMIN' && <ShieldCheck className="w-3 h-3 mr-1" />}
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            worker.role === 'CORPORATE_ADMIN'
+                              ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300'
+                              : worker.role === 'COMPANY_ADMIN'
+                              ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+                              : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                          }`}
+                        >
+                          {worker.role === 'CORPORATE_ADMIN' && (
+                            <Shield className="w-3 h-3 mr-1" />
+                          )}
+                          {worker.role === 'COMPANY_ADMIN' && (
+                            <ShieldCheck className="w-3 h-3 mr-1" />
+                          )}
                           {getRoleDisplayName(worker.role)}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          worker.status === 'ACTIVE' 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
-                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                        }`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            worker.status === 'ACTIVE'
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                          }`}
+                        >
                           {worker.status === 'ACTIVE' ? (
                             <>
                               <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
@@ -394,8 +448,12 @@ export default function AdminWorkersPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        {worker.lastLoginAt ? formatDate(worker.lastLoginAt) : (
-                          <span className="text-yellow-600 dark:text-yellow-400">Never logged in</span>
+                        {worker.lastLoginAt ? (
+                          formatDate(worker.lastLoginAt)
+                        ) : (
+                          <span className="text-yellow-600 dark:text-yellow-400">
+                            Never logged in
+                          </span>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -414,9 +472,17 @@ export default function AdminWorkersPage() {
                                 ? 'text-red-600 hover:text-red-900 hover:bg-red-100 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20'
                                 : 'text-green-600 hover:text-green-900 hover:bg-green-100 dark:text-green-400 dark:hover:text-green-300 dark:hover:bg-green-900/20'
                             }`}
-                            title={worker.status === 'ACTIVE' ? 'Deactivate User' : 'Activate User'}
+                            title={
+                              worker.status === 'ACTIVE'
+                                ? 'Deactivate User'
+                                : 'Activate User'
+                            }
                           >
-                            {worker.status === 'ACTIVE' ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                            {worker.status === 'ACTIVE' ? (
+                              <UserX className="w-4 h-4" />
+                            ) : (
+                              <UserCheck className="w-4 h-4" />
+                            )}
                           </button>
                           {/* Commented out Send Email button - might need in future */}
                           {/* <button
@@ -439,12 +505,13 @@ export default function AdminWorkersPage() {
                 <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Search className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                 </div>
-                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No workers found</h3>
+                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                  No workers found
+                </h3>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  {searchTerm || roleFilter 
+                  {searchTerm || roleFilter
                     ? 'No workers match your current filters.'
-                    : 'Get started by adding your first worker.'
-                  }
+                    : 'Get started by adding your first worker.'}
                 </p>
               </div>
             )}
@@ -454,7 +521,12 @@ export default function AdminWorkersPage() {
               <div className="px-4 lg:px-6 py-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                   <div className="text-sm text-gray-700 dark:text-gray-300 text-center sm:text-left">
-                    Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
+                    Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+                    {Math.min(
+                      pagination.page * pagination.limit,
+                      pagination.total
+                    )}{' '}
+                    of {pagination.total} results
                     {roleFilter && (
                       <span className="text-blue-600 dark:text-blue-400 ml-1">
                         (filtered by {getRoleDisplayName(roleFilter)})
@@ -463,7 +535,12 @@ export default function AdminWorkersPage() {
                   </div>
                   <div className="flex items-center justify-center space-x-2">
                     <Button
-                      onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                      onClick={() =>
+                        setPagination((prev) => ({
+                          ...prev,
+                          page: prev.page - 1,
+                        }))
+                      }
                       disabled={pagination.page === 1}
                       variant="outline"
                       size="sm"
@@ -474,7 +551,12 @@ export default function AdminWorkersPage() {
                       Page {pagination.page} of {pagination.totalPages}
                     </span>
                     <Button
-                      onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                      onClick={() =>
+                        setPagination((prev) => ({
+                          ...prev,
+                          page: prev.page + 1,
+                        }))
+                      }
                       disabled={pagination.page === pagination.totalPages}
                       variant="outline"
                       size="sm"
@@ -502,27 +584,37 @@ export default function AdminWorkersPage() {
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 bg-gradient-to-br from-[#008080] to-[#006666] rounded-full flex items-center justify-center">
               <span className="text-white font-medium">
-                {selectedWorker?.firstName[0]}{selectedWorker?.lastName[0]}
+                {selectedWorker?.firstName[0]}
+                {selectedWorker?.lastName[0]}
               </span>
             </div>
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                 {selectedWorker?.firstName} {selectedWorker?.lastName}
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{selectedWorker?.email}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {selectedWorker?.email}
+              </p>
             </div>
           </div>
 
-          <div className={`p-4 rounded-lg ${
-            statusAction === 'ACTIVE' ? 'bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-800' : 'bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800'
-          }`}>
-            <p className={`text-sm ${
-              statusAction === 'ACTIVE' ? 'text-green-800 dark:text-green-300' : 'text-red-800 dark:text-red-300'
-            }`}>
-              {statusAction === 'ACTIVE' 
+          <div
+            className={`p-4 rounded-lg ${
+              statusAction === 'ACTIVE'
+                ? 'bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-800'
+                : 'bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800'
+            }`}
+          >
+            <p
+              className={`text-sm ${
+                statusAction === 'ACTIVE'
+                  ? 'text-green-800 dark:text-green-300'
+                  : 'text-red-800 dark:text-red-300'
+              }`}
+            >
+              {statusAction === 'ACTIVE'
                 ? '✅ This user will be able to log in and access the system.'
-                : '⚠️ This user will be temporarily blocked from accessing the system. They can be reactivated at any time.'
-              }
+                : '⚠️ This user will be temporarily blocked from accessing the system. They can be reactivated at any time.'}
             </p>
           </div>
 
@@ -539,7 +631,11 @@ export default function AdminWorkersPage() {
             </Button>
             <Button
               onClick={confirmStatusChange}
-              className={`w-full sm:w-auto ${statusAction === 'ACTIVE' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+              className={`w-full sm:w-auto ${
+                statusAction === 'ACTIVE'
+                  ? 'bg-green-600 hover:bg-green-700'
+                  : 'bg-red-600 hover:bg-red-700'
+              }`}
             >
               {statusAction === 'ACTIVE' ? 'Activate User' : 'Deactivate User'}
             </Button>

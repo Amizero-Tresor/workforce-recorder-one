@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { Response } from 'express';
 import { DatabaseService } from '../database/database.service';
@@ -14,12 +18,12 @@ export class ProjectsService {
   constructor(
     private db: DatabaseService,
     private auditLogsService: AuditLogsService,
-    private exportService: ExportService,
+    private exportService: ExportService
   ) {}
 
   async findAll(
     currentUser: any,
-    paginationDto: PaginationDto,
+    paginationDto: PaginationDto
   ): Promise<PaginatedResponse<any>> {
     const { page, limit } = paginationDto;
     const skip = (page - 1) * limit;
@@ -72,7 +76,7 @@ export class ProjectsService {
   async exportProjects(
     currentUser: any,
     format: 'csv' | 'excel',
-    res: Response,
+    res: Response
   ) {
     let whereClause: any = {};
 
@@ -95,7 +99,7 @@ export class ProjectsService {
       },
     });
 
-    const exportData = projects.map(project => 
+    const exportData = projects.map((project) =>
       this.exportService.formatProjectForExport(project)
     );
 
@@ -179,13 +183,19 @@ export class ProjectsService {
     return project;
   }
 
-  async update(currentUser: any, id: string, updateProjectDto: UpdateProjectDto) {
+  async update(
+    currentUser: any,
+    id: string,
+    updateProjectDto: UpdateProjectDto
+  ) {
     const project = await this.findById(id);
 
     // Check permissions
     if (currentUser.role === Role.COMPANY_ADMIN) {
       if (project.companyId !== currentUser.companyId) {
-        throw new ForbiddenException('You can only manage projects in your company');
+        throw new ForbiddenException(
+          'You can only manage projects in your company'
+        );
       }
     }
 
@@ -210,13 +220,19 @@ export class ProjectsService {
     return updatedProject;
   }
 
-  async assignWorkers(currentUser: any, id: string, assignWorkersDto: AssignWorkersDto) {
+  async assignWorkers(
+    currentUser: any,
+    id: string,
+    assignWorkersDto: AssignWorkersDto
+  ) {
     const project = await this.findById(id);
 
     // Check permissions
     if (currentUser.role === Role.COMPANY_ADMIN) {
       if (project.companyId !== currentUser.companyId) {
-        throw new ForbiddenException('You can only manage projects in your company');
+        throw new ForbiddenException(
+          'You can only manage projects in your company'
+        );
       }
     }
 
@@ -226,7 +242,7 @@ export class ProjectsService {
     });
 
     // Create new assignments
-    const assignments = assignWorkersDto.workerIds.map(workerId => ({
+    const assignments = assignWorkersDto.workerIds.map((workerId) => ({
       projectId: id,
       workerId,
     }));
@@ -245,6 +261,6 @@ export class ProjectsService {
       },
     });
 
-    return { message: 'Workers assigned successfully' };
+    return { message: 'Staff assigned successfully' };
   }
 }

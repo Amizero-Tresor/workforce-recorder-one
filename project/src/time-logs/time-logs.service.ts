@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Role, LogStatus } from '@prisma/client';
 import { Response } from 'express';
 import { DatabaseService } from '../database/database.service';
@@ -19,13 +24,13 @@ export class TimeLogsService {
     private db: DatabaseService,
     private auditLogsService: AuditLogsService,
     private notificationsService: NotificationsService,
-    private exportService: ExportService,
+    private exportService: ExportService
   ) {}
 
   async findAll(
     currentUser: any,
     paginationDto: PaginationDto,
-    filtersDto: any,
+    filtersDto: any
   ): Promise<PaginatedResponse<any>> {
     const { page, limit } = paginationDto;
     const skip = (page - 1) * limit;
@@ -116,7 +121,7 @@ export class TimeLogsService {
   async exportTimeLogs(
     currentUser: any,
     exportFilters: ExportFiltersDto,
-    res: Response,
+    res: Response
   ) {
     let whereClause: any = {};
 
@@ -182,7 +187,7 @@ export class TimeLogsService {
       },
     });
 
-    const exportData = timeLogs.map(timeLog => 
+    const exportData = timeLogs.map((timeLog) =>
       this.exportService.formatTimeLogForExport(timeLog)
     );
 
@@ -198,7 +203,9 @@ export class TimeLogsService {
   async bulkAction(currentUser: any, bulkActionDto: BulkActionDto) {
     // Check permissions
     if (currentUser.role === Role.WORKER) {
-      throw new ForbiddenException('Workers cannot perform bulk actions on time logs');
+      throw new ForbiddenException(
+        'Staff cannot perform bulk actions on time logs'
+      );
     }
 
     // Fetch all time logs to validate permissions
@@ -230,9 +237,13 @@ export class TimeLogsService {
 
     // Check company permissions for company admins
     if (currentUser.role === Role.COMPANY_ADMIN) {
-      const invalidLogs = timeLogs.filter(log => log.user.companyId !== currentUser.companyId);
+      const invalidLogs = timeLogs.filter(
+        (log) => log.user.companyId !== currentUser.companyId
+      );
       if (invalidLogs.length > 0) {
-        throw new ForbiddenException('You can only review time logs from your company');
+        throw new ForbiddenException(
+          'You can only review time logs from your company'
+        );
       }
     }
 
@@ -250,7 +261,7 @@ export class TimeLogsService {
     });
 
     // Create notifications for each affected worker
-    const notifications = timeLogs.map(timeLog => ({
+    const notifications = timeLogs.map((timeLog) => ({
       userId: timeLog.user.id,
       title: 'Time Log Review',
       message: `Your time log for ${timeLog.project.name} has been ${bulkActionDto.action.toLowerCase()}`,
@@ -331,7 +342,9 @@ export class TimeLogsService {
     });
 
     if (ongoingTimeLog) {
-      throw new BadRequestException('You already have an ongoing time log. Please check out first before starting a new session.');
+      throw new BadRequestException(
+        'You already have an ongoing time log. Please check out first before starting a new session.'
+      );
     }
 
     // Verify user has access to the project
@@ -351,11 +364,11 @@ export class TimeLogsService {
     if (createTimeLogDto.startTime && createTimeLogDto.endTime) {
       const start = new Date(createTimeLogDto.startTime);
       const end = new Date(createTimeLogDto.endTime);
-      
+
       if (end <= start) {
         throw new BadRequestException('End time must be after start time');
       }
-      
+
       totalHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
     }
 
@@ -385,7 +398,11 @@ export class TimeLogsService {
     return timeLog;
   }
 
-  async update(currentUser: any, id: string, updateTimeLogDto: UpdateTimeLogDto) {
+  async update(
+    currentUser: any,
+    id: string,
+    updateTimeLogDto: UpdateTimeLogDto
+  ) {
     const timeLog = await this.findById(id);
 
     // Check permissions
@@ -393,16 +410,19 @@ export class TimeLogsService {
       if (timeLog.userId !== currentUser.id) {
         throw new ForbiddenException('You can only edit your own time logs');
       }
-      
+
       // Allow updating if:
       // 1. It's an ongoing time log (no endTime) - for check-out
       // 2. It's a rejected or edit-requested log - for editing
-      const canEdit = !timeLog.endTime || 
-                     timeLog.status === LogStatus.REJECTED || 
-                     timeLog.status === LogStatus.EDIT_REQUESTED;
-      
+      const canEdit =
+        !timeLog.endTime ||
+        timeLog.status === LogStatus.REJECTED ||
+        timeLog.status === LogStatus.EDIT_REQUESTED;
+
       if (!canEdit) {
-        throw new ForbiddenException('You can only edit ongoing time logs or rejected/edit-requested time logs');
+        throw new ForbiddenException(
+          'You can only edit ongoing time logs or rejected/edit-requested time logs'
+        );
       }
     }
 
@@ -411,27 +431,30 @@ export class TimeLogsService {
     if (updateTimeLogDto.startTime && updateTimeLogDto.endTime) {
       const start = new Date(updateTimeLogDto.startTime);
       const end = new Date(updateTimeLogDto.endTime);
-      
+
       if (end <= start) {
         throw new BadRequestException('End time must be after start time');
       }
-      
+
       totalHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
     } else if (timeLog.startTime && updateTimeLogDto.endTime) {
       // Calculate hours when only end time is being updated (check-out scenario)
       const start = new Date(timeLog.startTime);
       const end = new Date(updateTimeLogDto.endTime);
-      
+
       if (end <= start) {
         throw new BadRequestException('End time must be after start time');
       }
-      
+
       totalHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
     }
 
     // Determine new status - only reset to pending if it was rejected or edit-requested
     let newStatus = timeLog.status;
-    if (timeLog.status === LogStatus.REJECTED || timeLog.status === LogStatus.EDIT_REQUESTED) {
+    if (
+      timeLog.status === LogStatus.REJECTED ||
+      timeLog.status === LogStatus.EDIT_REQUESTED
+    ) {
       newStatus = LogStatus.PENDING;
     }
 
@@ -468,7 +491,7 @@ export class TimeLogsService {
 
     // Check permissions
     if (currentUser.role === Role.WORKER) {
-      throw new ForbiddenException('Workers cannot review time logs');
+      throw new ForbiddenException('Staff cannot review time logs');
     }
 
     if (currentUser.role === Role.COMPANY_ADMIN) {
@@ -486,7 +509,9 @@ export class TimeLogsService {
       });
 
       if (timeLogWithUser?.user.companyId !== currentUser.companyId) {
-        throw new ForbiddenException('You can only review time logs from your company');
+        throw new ForbiddenException(
+          'You can only review time logs from your company'
+        );
       }
     }
 
@@ -540,7 +565,7 @@ export class TimeLogsService {
       if (timeLog.userId !== currentUser.id) {
         throw new ForbiddenException('You can only delete your own time logs');
       }
-      
+
       if (timeLog.status === LogStatus.APPROVED) {
         throw new ForbiddenException('Cannot delete approved time logs');
       }
@@ -572,7 +597,7 @@ export class TimeLogsService {
     startDate: Date,
     endDate: Date,
     userId?: string,
-    projectId?: string,
+    projectId?: string
   ) {
     let whereClause: any = {
       startTime: {
@@ -619,7 +644,10 @@ export class TimeLogsService {
     });
 
     // Aggregate data
-    const totalHours = timeLogs.reduce((sum, log) => sum + (log.totalHours || 0), 0);
+    const totalHours = timeLogs.reduce(
+      (sum, log) => sum + (log.totalHours || 0),
+      0
+    );
     const totalLogs = timeLogs.length;
 
     // Group by user
@@ -674,17 +702,17 @@ export class TimeLogsService {
     userId?: string,
     projectId?: string,
     format: 'csv' | 'excel' = 'csv',
-    res?: Response,
+    res?: Response
   ) {
     const report = await this.getWorkingHoursReport(
       currentUser,
       startDate,
       endDate,
       userId,
-      projectId,
+      projectId
     );
 
-    const exportData = report.logs.map(timeLog => 
+    const exportData = report.logs.map((timeLog) =>
       this.exportService.formatTimeLogForExport(timeLog)
     );
 

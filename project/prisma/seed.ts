@@ -9,21 +9,21 @@ async function main() {
   // Create Corporate
   const corporate = await prisma.corporate.create({
     data: {
-      name: 'TechCorp Holdings',
+      name: 'Cenfri',
     },
   });
 
   // Create Companies
   const company1 = await prisma.company.create({
     data: {
-      name: 'TechCorp Solutions',
+      name: 'New Analytica Solutions',
       corporateId: corporate.id,
     },
   });
 
   const company2 = await prisma.company.create({
     data: {
-      name: 'TechCorp Services',
+      name: 'Analytica MO',
       corporateId: corporate.id,
     },
   });
@@ -75,13 +75,13 @@ async function main() {
     },
   });
 
-  // Create Workers
+  // Create Staff
   const worker1 = await prisma.user.create({
     data: {
-      email: 'worker1@techcorp-solutions.com',
+      email: 'staff1@techcorp-solutions.com',
       phoneNumber: '+1234567893',
-      firstName: 'Alice',
-      lastName: 'Developer',
+      firstName: 'JP',
+      lastName: 'Irumva',
       password: hashedPassword,
       role: Role.WORKER,
       status: UserStatus.ACTIVE,
@@ -92,10 +92,10 @@ async function main() {
 
   const worker2 = await prisma.user.create({
     data: {
-      email: 'worker2@techcorp-solutions.com',
+      email: 'staff2@techcorp-solutions.com',
       phoneNumber: '+1234567894',
-      firstName: 'Bob',
-      lastName: 'Designer',
+      firstName: 'Sam',
+      lastName: 'Nzaramba',
       password: hashedPassword,
       role: Role.WORKER,
       status: UserStatus.ACTIVE,
@@ -106,10 +106,10 @@ async function main() {
 
   const worker3 = await prisma.user.create({
     data: {
-      email: 'worker3@techcorp-services.com',
+      email: 'staff3@techcorp-services.com',
       phoneNumber: '+1234567895',
-      firstName: 'Charlie',
-      lastName: 'Analyst',
+      firstName: 'Philip',
+      lastName: 'Sendi',
       password: hashedPassword,
       role: Role.WORKER,
       status: UserStatus.ACTIVE,
@@ -121,8 +121,9 @@ async function main() {
   // Create Projects
   const project1 = await prisma.project.create({
     data: {
-      name: 'E-commerce Platform',
-      description: 'Building a new e-commerce platform',
+      name: 'RED PROGRAMME',
+      description:
+        'The Rwanda Economy Digitalisation Programme is a six-year digital transformation initiative by the Government of Rwanda, the Mastercard Foundation and Cenfri. The programme works with 71point4 and policymakers to develop evidence-based and inclusive policies to reduce poverty and digitise the Rwandan economy.',
       companyId: company1.id,
       isActive: true,
     },
@@ -146,7 +147,7 @@ async function main() {
     },
   });
 
-  // Assign Workers to Projects
+  // Assign Staff to Projects
   await prisma.workerProject.createMany({
     data: [
       { workerId: worker1.id, projectId: project1.id },
@@ -159,7 +160,7 @@ async function main() {
   // Create Sample Time Logs
   const now = new Date();
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-  
+
   await prisma.timeLog.createMany({
     data: [
       {
@@ -200,9 +201,9 @@ async function main() {
   console.log('Created:');
   console.log('- 1 Corporate');
   console.log('- 2 Companies');
-  console.log('- 6 Users (1 Corporate Admin, 2 Company Admins, 3 Workers)');
+  console.log('- 6 Users (1 Corporate Admin, 2 Company Admins, 3 Staff)');
   console.log('- 3 Projects');
-  console.log('- 4 Worker-Project assignments');
+  console.log('- 4 Staff-Project assignments');
   console.log('- 3 Time logs');
 }
 

@@ -14,13 +14,16 @@ export function formatDateTime(date: string | Date) {
 }
 
 export function formatTime(date: string | Date) {
-  return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return new Date(date).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 export function formatDuration(totalHours: number) {
   const hours = Math.floor(totalHours);
   const minutes = Math.round((totalHours - hours) * 60);
-  
+
   if (hours === 0) {
     return `${minutes}m`;
   } else if (minutes === 0) {
@@ -52,7 +55,7 @@ export function getStatusColor(status: string) {
 export function getRoleDisplayName(role: string) {
   switch (role) {
     case 'WORKER':
-      return 'Worker';
+      return 'Staff';
     case 'COMPANY_ADMIN':
       return 'Company Admin';
     case 'CORPORATE_ADMIN':
